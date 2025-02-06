@@ -7,8 +7,9 @@
 zgrep '^@' /local/projects-t4/aberdeen2ro/SerreDLab-4/raw_reads/2024-08-22_Pacbio/Cbombi_WHA1_20240805/PACBIO_DATA/EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz > original_read_names.txt
 
 zgrep '^@' Cbombi_hifi_filtered.fastq.gz > filtered_read_names.txt
+```
 Find the Read Names that Were Filtered Out
-
+```
 grep -v -f filtered_read_names.txt original_read_names.txt > filtered_out_read_names.txt
 ```
 ## Extract reads and create a new fastq
