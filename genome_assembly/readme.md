@@ -39,3 +39,8 @@ We use Leishmania donovani ribosomal RNA sequences to locate them in C .bombi
 ```
 /usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta -subject /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/canu/rRNA/Ld5SrRNA.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
 ```
+## BUSCO analysis
+```
+/usr/local/packages/busco-5.4.3/bin/busco -m genome -i /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco --long -f
+/usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco/busco
+```
