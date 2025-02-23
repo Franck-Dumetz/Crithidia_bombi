@@ -1,5 +1,7 @@
 # Crithidia bombi genome assembly
 
+
+
 ## Preparing the data by filtering for reads longer than 1000 bp
 ```
 /usr/local/packages/filtlong-0.2.0/bin/filtlong --min_length 1000 --keep_percent 90 /local/projects-t3/EDS10/Cbombi_WHA1_20240805/PACBIO_DATA/EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz | gzip > Cbombi_hifi_filtered.fastq.gz
@@ -18,6 +20,12 @@ seqtk subseq /local/projects-t4/aberdeen2ro/SerreDLab-4/raw_reads/2024-08-22_Pac
 ```
 ## HiFiasm to assemble
 use the following slurm script [hifi_slurm.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/genome_assembly/hifi_slurm.sh) <br />
+
+## BUSCO analysis
+```
+/usr/local/packages/busco-5.4.3/bin/busco -m genome -i /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco --long -f
+/usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco/busco
+```
 
 ## Determining coverage
 ```
@@ -39,8 +47,8 @@ We use Leishmania donovani ribosomal RNA sequences to locate them in C .bombi
 ```
 /usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta -subject /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/canu/rRNA/Ld5SrRNA.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
 ```
-## BUSCO analysis
+## Finding local CNVs of maximum 1000bp
 ```
-/usr/local/packages/busco-5.4.3/bin/busco -m genome -i /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco --long -f
-/usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco/busco
+bedtools makewindows -g /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.hap1.p_ctg.fasta.fai -w 1000 > Cb_1000bin.bed
+bedtools coverage -a Cb_1000bin.bed -b /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_reads2hifi.bam > Cb_1000bin_cov.txt
 ```
