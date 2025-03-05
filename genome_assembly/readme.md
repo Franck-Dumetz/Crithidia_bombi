@@ -6,17 +6,17 @@ Table of content: <br />
 
 
 Software requirements: <br />
-* bedtools-2.27.1 <br />
-• busco-5.4.3 <br />
-* filtlong-0.2.0 <br />
-• hifiasm-0.24.0 <br />
-• minimap2.1 <br />
-• mummer-3.23 <br />
-• quast-5.2.0 <br />
-• samtools-1.20 <br />
-* seqkit-0.7.2 <br />
-* seqtk-1.0-r63 <br />
-• trnascan-se-2.0.3 <br />
+- bedtools-2.27.1 <br />
+- busco-5.4.3 <br />
+- filtlong-0.2.0 <br />
+- hifiasm-0.24.0 <br />
+- minimap2.1 <br />
+- mummer-3.23 <br />
+- quast-5.2.0 <br />
+- samtools-1.20 <br />
+- seqkit-0.7.2 <br />
+- seqtk-1.0-r63 <br />
+- trnascan-se-2.0.3 <br />
 
 ## Preparing the data by filtering for reads longer than 1000 bp
 ```
