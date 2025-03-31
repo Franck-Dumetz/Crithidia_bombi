@@ -1,6 +1,6 @@
 # Crithidia bombi genome assembly
 
-BioProject (TBD)
+BioProject PRJNA1231061
 
 Table of content: <br />
 
