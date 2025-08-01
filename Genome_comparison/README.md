@@ -3,7 +3,7 @@
 
 
 
-## Splice Leader sequence in other Trypanosomatids (_Crithidia fasciculata_ and _Lotmaria passim_)
+## Spliced-Leader sequence in other Trypanosomatids (_Crithidia fasciculata_ and _Lotmaria passim_)
 Using blast to find/identify the SL
 ```
 makeblastdb -in TriTrypDB-68_CfasciculataCfCl_Genome.fasta -dbtype nucl -out Cf_db
