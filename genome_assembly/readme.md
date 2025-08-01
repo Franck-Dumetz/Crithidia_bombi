@@ -73,7 +73,12 @@ Extract the 50 first nucleotides of every ONT DRS
 ```
 seqkit subseq -r 1:50 Cbombi_ONT.fasta > Cbombi_first50.fasta
 ```
+Extract 100,000 sequences
+```
+seqkit split -s 100000 Cbombi_first50.fasta -o Cbombi_split
+cat *.fasta > Cbombi_first50_100k.fasta
+```
 Using meme to find enriched motifs
 ```
-
+/usr/local/packages/meme-5.5.5/bin/meme Cbombi_first50_100k.filt.fasta -dna -oc . -mod zoops -nmotifs 10 -minw 20 -maxw 50 -maxsize 100000000000
 ```
