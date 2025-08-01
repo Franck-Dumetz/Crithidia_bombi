@@ -69,6 +69,7 @@ bedtools makewindows -g /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb
 bedtools coverage -a Cb_1000bin.bed -b /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_reads2hifi.bam > Cb_1000bin_cov.txt
 ```
 ## Finding the spliced leader sequence
+First step: identification of the spliced leader sequence using ONT DRS reads
 Extract the 50 first nucleotides of every ONT DRS
 ```
 seqkit subseq -r 1:50 Cbombi_ONT.fasta > Cbombi_first50.fasta
