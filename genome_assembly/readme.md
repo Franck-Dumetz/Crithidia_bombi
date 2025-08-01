@@ -68,7 +68,12 @@ We use Leishmania donovani ribosomal RNA sequences to locate them in C .bombi
 bedtools makewindows -g /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.hap1.p_ctg.fasta.fai -w 1000 > Cb_1000bin.bed
 bedtools coverage -a Cb_1000bin.bed -b /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_reads2hifi.bam > Cb_1000bin_cov.txt
 ```
-## Polishing of the 6 contings with only 1 telomere into 3 contigs
+## Finding the spliced leader sequence
+Extract the 50 first nucleotides of every ONT DRS
 ```
-/local/projects-t4/aberdeen2ro/SerreDLab-4/raw_reads/2024-08-22_Pacbio/Cbombi_WHA1_20240805/PACBIO_DATA/EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz Cbombi_reads2hifi.sam Cb_hifi.asm.bp.p_ctg.fasta > polished_3Tcontigs.fasta
+seqkit subseq -r 1:50 Cbombi_ONT.fasta > Cbombi_first50.fasta
+```
+Using meme to find enriched motifs
+```
+
 ```
