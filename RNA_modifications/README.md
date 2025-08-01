@@ -33,7 +33,6 @@ fasta=/path/to/fasta
 
 ## Parsing of the data
 ```
-samtools view -bhF 2308 aligned.sam > aligned.bam
-samtools sort aligned.bam -o aligned.sorted.bam
-samtools index aligned.sorted.bam
+samtools view -bhF 2308 aligned.sam | samtools sort -o bam_sorted.bam
+samtools index bam_sorted.bam
 ```
