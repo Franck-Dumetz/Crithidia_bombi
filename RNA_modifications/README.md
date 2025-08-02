@@ -48,4 +48,6 @@ Calling mods on modkit
 
 ```
 /usr/local/packages/modkit-0.4.4/modkit pileup --ref /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_genome_refined.fasta --mod-threshold h:0.9 Cbombi_pseudoU_hac.sorted.bam Cbombi_pseudoU_hac.bed
+
+/usr/local/packages/modkit-0.4.4/modkit summary Cbombi_pseudoU_hac.sorted.bam
 ```
