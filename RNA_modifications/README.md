@@ -51,3 +51,4 @@ Calling mods on modkit
 
 /usr/local/packages/modkit-0.4.4/modkit summary Cbombi_pseudoU_hac.sorted.bam
 ```
+Use pass threshold from the summary output has start to establish a threshold for later <br />
