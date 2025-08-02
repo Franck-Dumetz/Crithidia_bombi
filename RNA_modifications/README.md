@@ -36,3 +36,16 @@ fasta=/path/to/fasta
 samtools view -bhF 2308 aligned.sam | samtools sort -o bam_sorted.bam
 samtools index bam_sorted.bam
 ```
+
+## Per-read comparison
+Calling mods on modkit
+| Modification Name     | modkit Code | Example Threshold Flag     | Notes                                 |
+|------------------------|-------------|-----------------------------|----------------------------------------|
+| N6-methyladenosine     | `m`         | `--mod-threshold m:0.9`     | Commonly used m6A motif (DRACH)        |
+| 5-methylcytosine       | `c`         | `--mod-threshold c:0.9`     | Cytosine methylation (m5C)             |
+| Pseudouridine (Ψ)      | `h`         | `--mod-threshold h:0.9`     | Calling ofr PseudoUridine              |
+| Inosine                | `i`         | `--mod-threshold i:0.9`     | A-to-I RNA editing                     |
+
+```
+/usr/local/packages/modkit-0.4.4/modkit pileup --ref /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_genome_refined.fasta --mod-threshold h:0.9 Cbombi_pseudoU_hac.sorted.bam Cbombi_pseudoU_hac.bed
+```
