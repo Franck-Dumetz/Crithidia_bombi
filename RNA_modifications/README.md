@@ -56,3 +56,9 @@ Calling mods on modkit
 /usr/local/packages/modkit-0.4.4/modkit summary Cbombi_pseudoU_hac.sorted.bam
 ```
 Use pass threshold from the summary output has start to establish a threshold for later <br />
+
+## Preparing the bed file
+at least 10 reads at the position and pecentage modified different than zero
+```
+awk '$10 >= 10 && $11 != 0' Cbombi_inosine_m6A.bed | head
+```
