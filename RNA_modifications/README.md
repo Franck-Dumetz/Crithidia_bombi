@@ -16,6 +16,10 @@ fasta=/path/to/fasta
 
 /usr/local/packages/dorado-0.8.1/bin/dorado basecaller /usr/local/packages/dorado-0.8.1/models/rna004_130bps_sup@v5.1.0 /usr/local/packages/dorado-0.8.1/models/rna004_130bps_sup@v5.1.0 $pod_directory --reference $fasta --modified-bases-models /usr/local/packages/dorado-0.8.1/models/rna004_130bps_sup@v5.1.0_m6A_DRACH@v1 -x cuda:7 --emit-sam > Cbombi_DRACH_m6A.sam
 ```
+find DRACH motif in the genome
+```
+grep -o -i '[AGT][AG]AC[ACT]' $fasta | wc -l
+```
 ## m5C
 ```
 pod_directory=/path/to/Pod5
