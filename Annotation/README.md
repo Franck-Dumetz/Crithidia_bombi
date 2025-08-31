@@ -27,7 +27,7 @@ stringtie-2.2.3/stringtie /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/ONT/C
 ```
 Stringtie is "isoform aware" but doesn't really handle polycistron well. <br />
 A manual step to remove the wrong annotation was added using []() <br />
-To perform this step, open IGV with the bam file used to create the stringtie gft and the transdecoder gff3 output. Then identify every transcript evidence that is wrong based on ORF presence and soft clipping on reads on the right AND the left of the transcript indicating of the presence of the spliced-leader and of the polyA tail. Record the transcript id in a txt file and use []() to remove them from the gft file.
+To perform this step, open IGV with the bam file used to create the stringtie gft and the transdecoder gff3 output. Then identify every transcript evidence that is wrong based on ORF presence and soft clipping on reads on the right AND the left of the transcript indicating of the presence of the spliced-leader and of the polyA tail. Remove every transcript evidence that is overlapping, this is indicative of a polycistron. Record the transcript id in a txt file and use []() to remove them from the gft file. <br />
 Another step is to add missing annatation was aded using []() and to correct start/end using []()<br /> 
 ## Identification of the longest ORF
 ```
