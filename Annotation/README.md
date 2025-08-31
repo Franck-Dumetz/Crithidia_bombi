@@ -1,3 +1,11 @@
-#Using Direct RNA sequencing from Oxford Nanopore Technology to annotate the _C. bombi_ genome
+# Using Direct RNA sequencing from Oxford Nanopore Technology to annotate the _C. bombi_ genome
 
-Reads a
+BioSample
+
+Table of content: <br />
+
+
+Software requirements: <br />
+- minimap-2.1
+- samtools-1.20
+- 
