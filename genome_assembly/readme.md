@@ -35,8 +35,11 @@ grep -v -f filtered_read_names.txt original_read_names.txt > filtered_out_read_n
 seqtk subseq /local/projects-t4/aberdeen2ro/SerreDLab-4/raw_reads/2024-08-22_Pacbio/Cbombi_WHA1_20240805/PACBIO_DATA/EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz filtered_out_read_names.txt > Cbombi_reads_Minus1000bp.fastq
 ```
 ## HiFiasm to assemble
-use the following slurm script [hifi_slurm.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/genome_assembly/hifi_slurm.sh) <br />
-
+Use the following slurm script [hifi_slurm.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/genome_assembly/hifi_slurm.sh) <br />
+From the haplotig condenced fasta file, rename the T2T contigs with numbers in increasing size and the one of 1T with letter in increasing size and sort the fasta file
+```
+seqkit sort Cbombi_genome_refined.fasta > Cbombi_genome_refined.sorted.fasta
+```
 ## BUSCO analysis
 ```
 /usr/local/packages/busco-5.4.3/bin/busco -m genome -i /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco --long -f
