@@ -6,11 +6,16 @@ Table of content: <br />
 
 
 Software requirements: <br />
+- dorado-0.8.1
 - minimap-2.1
 - samtools-1.20
 - stringtie-2.2.1
 - transdecoder-5.7.1
 
+## Basecalling using Dorado
+```
+/usr/local/packages/dorado-0.8.1/bin/dorado basecaller --device cuda:1 --emit-fastq --min-qscore 7 /usr/local/packages/dorado-0.8.1/models/rna004_130bps_sup@v5.1.0 /local/projects-t2/RDMIN/SEQUENCE/20250513-MN23690_Cbombi_swimming_FranckDumetz-Blyss/20250513-MN23690/Cbombi_swimming/20250513_1621_MN23690_FBC11489_6cc52add/pod5_skip > Cbombi_swimming_ONT.fastq
+```
 ## Aligning reads to the reference genome
 Minimap was used as described in [Minimap_ONT.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/Minimap_ONT.sh) <br />
 
@@ -19,7 +24,7 @@ Parsing the reads
 samtools view -bhF 2308 Cbombi_ONT.sam | samtools sort -o Cbombi_ONT.bam
 samtools index Cbombi_ONT.bam
 ```
-## Spliced-leader identification 
+## Filtering for reads with a Spliced-leader and a polyA tail of at least 30 As 
 
 ## Semi-automated transcript evidence generation 
 ```
