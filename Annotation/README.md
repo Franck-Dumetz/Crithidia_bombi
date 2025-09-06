@@ -25,10 +25,18 @@ Parsing the reads
 samtools view -bhF 2308 Cbombi_ONT.sam | samtools sort -o Cbombi_ONT.bam
 samtools index Cbombi_ONT.bam
 ```
-## Filtering for reads with a Spliced-leader and a polyA tail of at least 30 As 
+## Filtering for reads with a Spliced-leader and a polyA tail of at least 20 As 
 Calling for polyA tail
 ```
 dorado-0.8.1/bin/dorado basecaller --device cuda:all --emit-sam --estimate-poly-a --min-qscore 7 /usr/local/packages/dorado-0.8.1/models/rna004_130bps_sup@v5.1.0 /local/projects-t2/RDMIN/SEQUENCE/20250513-MN23690_Cbombi_swimming_FranckDumetz-Blyss/20250513-MN23690/Cbombi_swimming/20250513_1621_MN23690_FBC11489_6cc52add/pod5_skip > Cbombi_swimming_polyA_ONT.sam
+```
+Filtering for reads with at least 20 A
+```
+samtools view -h Cbombi_swimming_polyA_ONT.sam | awk 'BEGIN{OFS="\t"} /^@/ {print; next} {for(i=12;i<=NF;i++){if($i ~ /^pt:i:/){split($i,a,":"); if(a[3]>=20) print}}}' | samtools view -b -o polyA_ge30.sam
+```
+Filtering for the reads with a spliced-leader sequence in 5'
+```
+SL=
 ```
 
 ## Semi-automated transcript evidence generation 
