@@ -28,7 +28,7 @@ samtools index Cbombi_ONT.bam
 ```
 ## Filtering for reads with a Spliced-leader and a polyA tail of at least 20 As 
 Filtering for the reads with a spliced-leader sequence in 5' <br />
-Use the SL_finding.sh script to identify the reads with a SL. Basically, that script executes the EMBOSS subpackage fuzznuc to find motifs with a certain number of mismatches (to accommodate ONT miscalling). Then it filters for only the motifs that are in the 30 first nucleotide of the read. <br />
+Use the [SL_finding.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/SL_finding.sh) script to identify the reads with a SL. Basically, that script executes the EMBOSS subpackage fuzznuc to find motifs with a certain number of mismatches (to accommodate ONT miscalling). Then it filters for only the motifs that are in the 30 first nucleotide of the read. <br />
 Use a U-to-T converted fasta file to work with fuzznuc. <br />
 ```
 /SL_finding.sh -s ATAAGTATCAGTTTCTGTACTTTATTG -F /path/to/directory -m 6 -l 10 -o SL_calls_4 ONT_reads.fasta
