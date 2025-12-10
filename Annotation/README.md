@@ -7,6 +7,7 @@ Table of content: <br />
 
 Software requirements: <br />
 - dorado-0.8.1
+- EMBOSS
 - minimap-2.1
 - samtools-1.20
 - stringtie-2.2.1
@@ -26,6 +27,12 @@ samtools view -bhF 2308 Cbombi_ONT.sam | samtools sort -o Cbombi_ONT.bam
 samtools index Cbombi_ONT.bam
 ```
 ## Filtering for reads with a Spliced-leader and a polyA tail of at least 20 As 
+Filtering for the reads with a spliced-leader sequence in 5' <br />
+Use the SL_finding.sh script to identify the reads with a SL. Basically, that script executes the EMBOSS subpackage fuzznuc to find motifs with a certain number of mismatches (to accommodate ONT miscalling). Then it filters for only the motifs that are in the 30 first nucleotide of the read. <br />
+Use a U-to-T converted fasta file to work with fuzznuc. <br />
+```
+/SL_finding.sh -s ATAAGTATCAGTTTCTGTACTTTATTG -F /path/to/directory -m 6 -l 10 -o SL_calls_4 ONT_reads.fasta
+```
 Calling for polyA tail
 ```
 dorado-0.8.1/bin/dorado basecaller --device cuda:all --emit-sam --estimate-poly-a --min-qscore 7 /usr/local/packages/dorado-0.8.1/models/rna004_130bps_sup@v5.1.0 /local/projects-t2/RDMIN/SEQUENCE/20250513-MN23690_Cbombi_swimming_FranckDumetz-Blyss/20250513-MN23690/Cbombi_swimming/20250513_1621_MN23690_FBC11489_6cc52add/pod5_skip > Cbombi_swimming_polyA_ONT.sam
@@ -34,10 +41,7 @@ Filtering for reads with at least 20 A
 ```
 samtools view -h Cbombi_swimming_polyA_ONT.sam | awk 'BEGIN{OFS="\t"} /^@/ {print; next} {for(i=12;i<=NF;i++){if($i ~ /^pt:i:/){split($i,a,":"); if(a[3]>=20) print}}}' | samtools view -b -o polyA_ge30.sam
 ```
-Filtering for the reads with a spliced-leader sequence in 5'
-```
-SL=
-```
+
 
 ## Semi-automated transcript evidence generation 
 ```
