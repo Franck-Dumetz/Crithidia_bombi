@@ -4,7 +4,7 @@ set -euo pipefail
 # ============================
 # Run all 3'-end truncations of a motif through fuzznuc,
 # parse outputs, and summarize hits per pattern length
-# with percentages based on FASTA read counts
+# with percentages based on FASTQ read counts
 # (also counting hits in first N nt of the read)
 # ============================
 
@@ -17,24 +17,24 @@ MINLEN=10          # minimum length from 3' end
 PMISMATCH=6
 OUTDIR="fuzznuc_SL_trunc"
 OVERWRITE=false
-FASTA_DIR=""       # will be required for percentages
+FASTQ_DIR=""       # will be required for percentages
 FIRST_N=30         # window for "first N nt" (hits_firstN, etc.)
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") -s SL_SEQUENCE -F FASTA_DIR [options] <fasta1> [fasta2 fasta3 ...]
+Usage: $(basename "$0") -s SL_SEQUENCE -F FASTQ_DIR [options] <fasta1> [fasta2 fasta3 ...]
 
 Generate all possible patterns from the 3' end of the provided spliced leader
 sequence (from length MINLEN up to full length) and run fuzznuc for each pattern
 on the given FASTA file(s). For each fuzznuc output, also generate a parsed TSV,
 then summarize counts across all TSVs and compute percentages based on the number
-of reads in the corresponding FASTA file.
+of reads in the corresponding FASTQ file.
 
 Required:
   -s, --sl-seq STR      Full spliced leader sequence (5'->3')
-  -F, --fatsa-dir DIR   Directory containing FASTA files for the samples.
-                        FASTA filenames must share the same stem as the FASTA,
-                        e.g. sample.fa -> sample.fasta.gz / sample.fasta / sample.fa.gz / sample.fa
+  -F, --fastq-dir DIR   Directory containing FASTQ files for the samples.
+                        FASTQ filenames must share the same stem as the FASTA,
+                        e.g. sample.fa -> sample.fastq.gz / sample.fastq / sample.fq.gz / sample.fq
 
 Positional arguments:
   fasta                 One or more input FASTA files.
@@ -43,6 +43,7 @@ Options:
   -l, --minlen INT      Minimum pattern length (from 3' end; default: ${MINLEN})
   -m, --mismatch INT    Number of allowed mismatches (pmismatch; default: ${PMISMATCH})
   -o, --outdir DIR      Output directory for all fuzznuc results (default: ${OUTDIR})
+  -n, --first-n INT     Window from 5' end to count hits (default: ${FIRST_N})
   -f, --force           Overwrite existing output files
   -h, --help            Show this help and exit
 EOF
@@ -69,12 +70,16 @@ while [[ $# -gt 0 ]]; do
             OUTDIR="$2"
             shift 2
             ;;
+        -n|--first-n)
+            FIRST_N="$2"
+            shift 2
+            ;;
         -f|--force)
             OVERWRITE=true
             shift
             ;;
-        -F|--fasta-dir)
-            FASTA_DIR="$2"
+        -F|--fastq-dir)
+            FASTQ_DIR="$2"
             shift 2
             ;;
         -h|--help)
@@ -109,14 +114,14 @@ if [[ -z "$SL_SEQ" ]]; then
     exit 1
 fi
 
-if [[ -z "$FASTA_DIR" ]]; then
-    echo "ERROR: You must provide the FASTA directory with -F/--fasta-dir." >&2
+if [[ -z "$FASTQ_DIR" ]]; then
+    echo "ERROR: You must provide the FASTQ directory with -F/--fastq-dir." >&2
     usage
     exit 1
 fi
 
-if [[ ! -d "$FASTA_DIR" ]]; then
-    echo "ERROR: FASTA directory not found: $FASTA_DIR" >&2
+if [[ ! -d "$FASTQ_DIR" ]]; then
+    echo "ERROR: FASTQ directory not found: $FASTQ_DIR" >&2
     exit 1
 fi
 
@@ -135,6 +140,12 @@ if (( MINLEN < 1 || MINLEN > SL_LEN )); then
     exit 1
 fi
 
+# Check FIRST_N is a positive integer
+if ! [[ "$FIRST_N" =~ ^[0-9]+$ ]] || (( FIRST_N <= 0 )); then
+    echo "ERROR: --first-n / -n must be a positive integer (got: $FIRST_N)" >&2
+    exit 1
+fi
+
 # Check fuzznuc is available
 if ! command -v fuzznuc >/dev/null 2>&1; then
     echo "ERROR: fuzznuc not found in PATH. Load the EMBOSS module or install it." >&2
@@ -149,7 +160,7 @@ echo "Min pattern len  : $MINLEN"
 echo "Mismatches       : $PMISMATCH"
 echo "Output dir       : $OUTDIR"
 echo "FASTA files      : ${ARGS[*]}"
-echo "FASTA dir        : $FASTA_DIR"
+echo "FASTQ dir        : $FASTQ_DIR"
 echo "First-N window   : $FIRST_N nt"
 echo
 
@@ -164,15 +175,15 @@ echo -e "sample\treads" > "$READS_TSV"
 # Track reads per sample in-memory too
 declare -A READS_PER_SAMPLE
 
-# Helper: find FASTA file for a given sample stem
-find_fasta_for_sample() {
+# Helper: find FASTQ file for a given sample stem
+find_fastq_for_sample() {
     local stem="$1"
     local fq=""
-    local d="$FASTA_DIR"
+    local d="$FASTQ_DIR"
 
     local candidates=(
-        "$d/${stem}.fasta.gz"
-        "$d/${stem}.fasta"
+        "$d/${stem}.fastq.gz"
+        "$d/${stem}.fastq"
         "$d/${stem}.fq.gz"
         "$d/${stem}.fq"
     )
@@ -185,15 +196,15 @@ find_fasta_for_sample() {
     done
 
     if [[ -z "$fq" ]]; then
-        echo "ERROR: No FASTA found for sample '$stem' in $FASTA_DIR" >&2
+        echo "ERROR: No FASTQ found for sample '$stem' in $FASTQ_DIR" >&2
         exit 1
     fi
 
     echo "$fq"
 }
 
-# Helper: count reads in FASTA (lines/4)
-count_reads_in_fasta() {
+# Helper: count reads in FASTQ (lines/4)
+count_reads_in_fastq() {
     local fq="$1"
     local lines=0
     if [[ "$fq" == *.gz ]]; then
@@ -227,9 +238,9 @@ for (( len = MINLEN; len <= SL_LEN; len++ )); do
 
         # Ensure we have read count for this sample
         if [[ -z "${READS_PER_SAMPLE[$stem]:-}" ]]; then
-            fq=$(find_fasta_for_sample "$stem")
-            echo "  Counting reads in FASTA for sample '$stem': $fq"
-            reads=$(count_reads_in_fasta "$fq")
+            fq=$(find_fastq_for_sample "$stem")
+            echo "  Counting reads in FASTQ for sample '$stem': $fq"
+            reads=$(count_reads_in_fastq "$fq")
             READS_PER_SAMPLE[$stem]=$reads
             echo -e "${stem}\t${reads}" >> "$READS_TSV"
             echo "  -> $reads reads"
@@ -338,10 +349,10 @@ awk '
 ' "$summary_sample_len" | sort -n >> "$summary_len"
 
 # ============================
-# Add percentage columns based on FASTA read counts
+# Add percentage columns based on FASTQ read counts
 # ============================
 
-echo "Adding percentage columns based on FASTA read counts..."
+echo "Adding percentage columns based on FASTQ read counts..."
 
 # Per-sample + length:
 #   percent_of_sample_reads           = hits / sample_reads
