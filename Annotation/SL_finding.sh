@@ -4,8 +4,11 @@ set -euo pipefail
 # ============================
 # Run all 3'-end truncations of a motif through fuzznuc,
 # parse outputs, and summarize hits per pattern length
-# with percentages based on FASTQ read counts
-# (also counting hits in first N nt of the read)
+# (also counting hits in first N nt of the hit start position)
+#
+# This version DOES NOT use FASTQ files or percentages.
+# It supports .fa/.fasta and .fa.gz/.fasta.gz inputs by
+# decompressing gzipped FASTA to a temp file for fuzznuc.
 # ============================
 
 # Save full command line for reporting at the top of output tables
@@ -17,27 +20,23 @@ MINLEN=10          # minimum length from 3' end
 PMISMATCH=6
 OUTDIR="fuzznuc_SL_trunc"
 OVERWRITE=false
-FASTQ_DIR=""       # will be required for percentages
 FIRST_N=30         # window for "first N nt" (hits_firstN, etc.)
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") -s SL_SEQUENCE -F FASTQ_DIR [options] <fasta1> [fasta2 fasta3 ...]
+Usage: $(basename "$0") -s SL_SEQUENCE [options] <fasta1> [fasta2 fasta3 ...]
 
 Generate all possible patterns from the 3' end of the provided spliced leader
 sequence (from length MINLEN up to full length) and run fuzznuc for each pattern
 on the given FASTA file(s). For each fuzznuc output, also generate a parsed TSV,
-then summarize counts across all TSVs and compute percentages based on the number
-of reads in the corresponding FASTQ file.
+then summarize counts across all TSVs.
 
 Required:
   -s, --sl-seq STR      Full spliced leader sequence (5'->3')
-  -F, --fastq-dir DIR   Directory containing FASTQ files for the samples.
-                        FASTQ filenames must share the same stem as the FASTA,
-                        e.g. sample.fa -> sample.fastq.gz / sample.fastq / sample.fq.gz / sample.fq
 
 Positional arguments:
   fasta                 One or more input FASTA files.
+                        Supports: .fa/.fasta and .fa.gz/.fasta.gz
 
 Options:
   -l, --minlen INT      Minimum pattern length (from 3' end; default: ${MINLEN})
@@ -78,10 +77,6 @@ while [[ $# -gt 0 ]]; do
             OVERWRITE=true
             shift
             ;;
-        -F|--fastq-dir)
-            FASTQ_DIR="$2"
-            shift 2
-            ;;
         -h|--help)
             usage
             exit 0
@@ -111,17 +106,6 @@ fi
 if [[ -z "$SL_SEQ" ]]; then
     echo "ERROR: You must provide the spliced leader sequence with -s/--sl-seq." >&2
     usage
-    exit 1
-fi
-
-if [[ -z "$FASTQ_DIR" ]]; then
-    echo "ERROR: You must provide the FASTQ directory with -F/--fastq-dir." >&2
-    usage
-    exit 1
-fi
-
-if [[ ! -d "$FASTQ_DIR" ]]; then
-    echo "ERROR: FASTQ directory not found: $FASTQ_DIR" >&2
     exit 1
 fi
 
@@ -160,7 +144,6 @@ echo "Min pattern len  : $MINLEN"
 echo "Mismatches       : $PMISMATCH"
 echo "Output dir       : $OUTDIR"
 echo "FASTA files      : ${ARGS[*]}"
-echo "FASTQ dir        : $FASTQ_DIR"
 echo "First-N window   : $FIRST_N nt"
 echo
 
@@ -168,51 +151,29 @@ echo
 PATTERN_LOG="${OUTDIR}/patterns_used.tsv"
 echo -e "length\tpattern" > "$PATTERN_LOG"
 
-# File for total reads per sample
-READS_TSV="${OUTDIR}/reads_per_sample.tsv"
-echo -e "sample\treads" > "$READS_TSV"
+# ----------------------------
+# Handle gzipped FASTA
+# ----------------------------
+TMP_FASTAS=()
 
-# Track reads per sample in-memory too
-declare -A READS_PER_SAMPLE
-
-# Helper: find FASTQ file for a given sample stem
-find_fastq_for_sample() {
-    local stem="$1"
-    local fq=""
-    local d="$FASTQ_DIR"
-
-    local candidates=(
-        "$d/${stem}.fastq.gz"
-        "$d/${stem}.fastq"
-        "$d/${stem}.fq.gz"
-        "$d/${stem}.fq"
-    )
-
-    for c in "${candidates[@]}"; do
-        if [[ -f "$c" ]]; then
-            fq="$c"
-            break
-        fi
-    done
-
-    if [[ -z "$fq" ]]; then
-        echo "ERROR: No FASTQ found for sample '$stem' in $FASTQ_DIR" >&2
-        exit 1
-    fi
-
-    echo "$fq"
+cleanup_tmp_fastas() {
+  if (( ${#TMP_FASTAS[@]} > 0 )); then
+    rm -f "${TMP_FASTAS[@]}"
+  fi
 }
+trap cleanup_tmp_fastas EXIT
 
-# Helper: count reads in FASTQ (lines/4)
-count_reads_in_fastq() {
-    local fq="$1"
-    local lines=0
-    if [[ "$fq" == *.gz ]]; then
-        lines=$(zcat "$fq" | wc -l)
-    else
-        lines=$(wc -l < "$fq")
-    fi
-    echo $(( lines / 4 ))
+prep_fasta_for_fuzznuc() {
+  local fasta="$1"
+  if [[ "$fasta" == *.gz ]]; then
+    local tmp
+    tmp=$(mktemp "${OUTDIR}/tmp_fasta.XXXXXX.fa")
+    gzip -cd "$fasta" > "$tmp"
+    TMP_FASTAS+=("$tmp")
+    echo "$tmp"
+  else
+    echo "$fasta"
+  fi
 }
 
 # ---- Main: loop over pattern lengths and FASTA files ----
@@ -232,19 +193,11 @@ for (( len = MINLEN; len <= SL_LEN; len++ )); do
         fi
 
         base=$(basename "$fasta")
-        # e.g. monocistron.fa -> monocistron_SLlen10.fuzznuc / .tsv
-        stem="${base%.fa}"
-        stem="${stem%.fasta}"
+        base_no_gz="${base%.gz}"   # strip .gz for correct stem parsing
 
-        # Ensure we have read count for this sample
-        if [[ -z "${READS_PER_SAMPLE[$stem]:-}" ]]; then
-            fq=$(find_fastq_for_sample "$stem")
-            echo "  Counting reads in FASTQ for sample '$stem': $fq"
-            reads=$(count_reads_in_fastq "$fq")
-            READS_PER_SAMPLE[$stem]=$reads
-            echo -e "${stem}\t${reads}" >> "$READS_TSV"
-            echo "  -> $reads reads"
-        fi
+        # sample stem from FASTA name
+        stem="${base_no_gz%.fa}"
+        stem="${stem%.fasta}"
 
         out="${OUTDIR}/${stem}_SLlen${len}.fuzznuc"
         tsv="${OUTDIR}/${stem}_SLlen${len}.tsv"
@@ -253,8 +206,11 @@ for (( len = MINLEN; len <= SL_LEN; len++ )); do
             echo "  Skipping fuzznuc for ${fasta} len=${len} (output exists: $out). Use -f to overwrite."
         else
             echo "  Running fuzznuc on ${fasta} -> ${out}"
+
+            seq_in=$(prep_fasta_for_fuzznuc "$fasta")
+
             fuzznuc \
-                -sequence "$fasta" \
+                -sequence "$seq_in" \
                 -pattern "$pattern" \
                 -pmismatch "$PMISMATCH" \
                 -outfile "$out"
@@ -278,7 +234,6 @@ done
 
 echo "All patterns done."
 echo "Pattern list written to: $PATTERN_LOG"
-echo "Reads per sample:        $READS_TSV"
 echo "fuzznuc outputs and TSVs in: $OUTDIR/"
 echo
 
@@ -315,7 +270,6 @@ for f in "$OUTDIR"/*_SLlen*.tsv; do
     # hits with start <= FIRST_N
     hits_firstN=$(awk -v maxpos="$FIRST_N" '
         {
-            # Split into "Sequence..." and "start end strand pattern..." parts
             n = split($0, a, "\t")
             if (n < 2) next
             split(a[2], b, " ")
@@ -347,69 +301,6 @@ awk '
         }
     }
 ' "$summary_sample_len" | sort -n >> "$summary_len"
-
-# ============================
-# Add percentage columns based on FASTQ read counts
-# ============================
-
-echo "Adding percentage columns based on FASTQ read counts..."
-
-# Per-sample + length:
-#   percent_of_sample_reads           = hits / sample_reads
-#   percent_of_sample_reads_firstN    = hits_firstN / sample_reads
-tmp="${summary_sample_len}.tmp"
-{
-    # We want the command line to remain first in the *new* file
-    echo "# Command: $CMDLINE"
-    awk -v N="$FIRST_N" '
-        NR==FNR && FNR>1 {
-            reads[$1]=$2      # from reads_per_sample.tsv: sample -> total reads
-            next
-        }
-        NR==FNR { next }      # header of reads_per_sample.tsv
-
-        FNR==1 { next }       # old "# Command" line in summary_by_sample_and_length
-        FNR==2 {
-            print $0 "\tpercent_of_sample_reads\tpercent_of_sample_reads_first" N
-            next
-        }
-        {
-            samp = $1
-            r    = reads[samp]
-            h    = $3
-            hN   = $4
-            pct  = (r > 0 ? (h  * 100.0 / r) : 0)
-            pctN = (r > 0 ? (hN * 100.0 / r) : 0)
-            printf "%s\t%.6f\t%.6f\n", $0, pct, pctN
-        }
-    ' "$READS_TSV" "$summary_sample_len"
-} > "$tmp"
-mv "$tmp" "$summary_sample_len"
-
-# By length:
-#   percent_of_all_reads           = hits / total_reads_all
-#   percent_of_all_reads_firstN    = hits_firstN / total_reads_all
-total_reads_all=$(awk 'NR>1 {s+=$2} END {print s+0}' "$READS_TSV")
-
-tmp="${summary_len}.tmp"
-{
-    echo "# Command: $CMDLINE"
-    awk -v tot="$total_reads_all" -v N="$FIRST_N" '
-        FNR==1 { next }   # old "# Command"
-        FNR==2 {
-            print $0 "\tpercent_of_all_reads\tpercent_of_all_reads_first" N
-            next
-        }
-        {
-            h  = $2
-            hN = $3
-            pct  = (tot > 0 ? (h  * 100.0 / tot) : 0)
-            pctN = (tot > 0 ? (hN * 100.0 / tot) : 0)
-            printf "%s\t%.6f\t%.6f\n", $0, pct, pctN
-        }
-    ' "$summary_len"
-} > "$tmp"
-mv "$tmp" "$summary_len"
 
 echo "Summaries done."
 echo "Per-sample summary:    $summary_sample_len"
