@@ -58,7 +58,6 @@ echo "R2: $FILE2"
   -x "$HISAT2_INDEX" \
   -1 "$FILE1" -2 "$FILE2" \
   -S "$ALIGN_OUTPUT_DIR/${SAMPLE}.sam" \
-  --max-intronlen 5000 \
   -p "$THREADS" \
   --summary-file "$SUM_DIR/${SAMPLE}_summary.txt" \
   --new-summary
