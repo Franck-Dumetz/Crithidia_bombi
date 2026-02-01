@@ -86,3 +86,16 @@ Using meme to find enriched motifs
 ```
 /usr/local/packages/meme-5.5.5/bin/meme Cbombi_first50_100k.filt.fasta -dna -oc . -mod zoops -nmotifs 10 -minw 20 -maxw 50 -maxsize 100000000000
 ```
+## Ploidy determination using allele frequency
+We used a program called (ploidyNGS.py)[https://github.com/diriano/ploidyNGS?tab=readme-ov-file] 
+Whole genome 
+```
+./ploidyNGS.py --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/ploidy/ploidyNGS/Cbombi_ploidyNGS_guessPloidy --bam /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_reads2hifi10%.bam -u 10 -d 200 -m 0.95 -g
+
+```
+Per chromosome
+```
+N=$(find /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/ploidy/ploidyNGS_perChr -maxdepth 1 -name "*.bam" | wc -l)
+
+sbatch --array=1-"$N" /home/fdumetz/ploidyNGS/ploidyNGS_perChr.sh
+```
