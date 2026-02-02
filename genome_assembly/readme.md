@@ -55,7 +55,22 @@ samtools index Cbombi_reads2hifi.bam
 samtools depth Cbombi_reads2hifi.bam > Cbombi_depth.txt
 awk '{print $3}' Cbombi_depth.txt
 ```
-
+## GC content calculation per contigs
+```
+awk '
+>   BEGIN{FS=""; OFS="\t"}
+>   /^>/{if(id!=""){
+>          if(len>0) printf("%s\t%d\t%.6f\n", id, len, 100*gc/len);
+>        }
+>        id=substr($0,2); sub(/[ \t].*/,"",id);
+>        len=0; gc=0; next}
+>   {line=toupper($0);
+>    gsub(/[^ACGT]/,"",line);
+>    len+=length(line);
+>    tmp=line; gc+=gsub(/[GC]/,"",tmp)}
+>   END{if(id!="" && len>0) printf("%s\t%d\t%.6f\n", id, len, 100*gc/len)}
+> ' Cbombi_genome_refined.fasta > gc_per_contig.tsv
+```
 ## Finding telomeres
 ```
 seqkit locate -i -p TTAGGGTTAGGG Cb_hifi.asm.bp.p_ctg.fasta > HiFiCb_telomere.txt
@@ -71,6 +86,7 @@ We use Leishmania donovani ribosomal RNA sequences to locate them in C .bombi
 bedtools makewindows -g /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.hap1.p_ctg.fasta.fai -w 1000 > Cb_1000bin.bed
 bedtools coverage -a Cb_1000bin.bed -b /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_reads2hifi.bam > Cb_1000bin_cov.txt
 ```
+
 ## Finding the spliced leader sequence
 First step: identification of the spliced leader sequence using ONT DRS reads
 Extract the 50 first nucleotides of every ONT DRS
