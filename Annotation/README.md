@@ -53,9 +53,7 @@ OUT_BAM="${OUT_PREFIX}.sorted.bam"
 
 # filter -> sort -> index
 
-$SAMTOOLS view -b -N "$NAMES" "$BAM" \
-
-  | $SAMTOOLS sort -o "$OUT_BAM" -
+$SAMTOOLS view -b -N "$NAMES" "$BAM" | $SAMTOOLS sort -o "$OUT_BAM"
 
 $SAMTOOLS index "$OUT_BAM"
 ```
