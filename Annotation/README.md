@@ -31,24 +31,41 @@ Filtering for the reads with a spliced-leader sequence in 5' <br />
 Use the [SL_finding.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/SL_finding.sh) script to identify the reads with a SL. Basically, that script executes the EMBOSS subpackage fuzznuc to find motifs with a certain number of mismatches (to accommodate ONT miscalling). Then it filters for only the motifs that are in the 30 first nucleotide of the read. <br />
 Use a U-to-T converted fasta file to work with fuzznuc. <br />
 ```
-/SL_finding.sh -s ATAAGTATCAGTTTCTGTACTTTATTG -F /path/to/directory -m 6 -l 10 -o SL_calls_4 ONT_reads.fasta
+/SL_finding.sh -s ATAAGTATCAGTTTCTGTACTTTATTG -F /path/to/directory -m 4 -l 10 -o SL_calls_4 ONT_reads.fasta
 ```
-Calling for polyA tail
+Extracting read names from 
 ```
-dorado-0.8.1/bin/dorado basecaller --device cuda:all --emit-sam --estimate-poly-a --min-qscore 7 /usr/local/packages/dorado-0.8.1/models/rna004_130bps_sup@v5.1.0 /local/projects-t2/RDMIN/SEQUENCE/20250513-MN23690_Cbombi_swimming_FranckDumetz-Blyss/20250513-MN23690/Cbombi_swimming/20250513_1621_MN23690_FBC11489_6cc52add/pod5_skip > Cbombi_swimming_polyA_ONT.sam
+awk '{print $3}' Cbombi_swimming_ONT_SLlen19.tsv > SL19_read_names.txt
 ```
-Filtering for reads with at least 20 A
+Extracting reads with at least 19 nucleotides from the SL sequence
 ```
-samtools view -h Cbombi_swimming_polyA_ONT.sam | awk 'BEGIN{OFS="\t"} /^@/ {print; next} {for(i=12;i<=NF;i++){if($i ~ /^pt:i:/){split($i,a,":"); if(a[3]>=20) print}}}' | samtools view -b -o polyA_ge30.sam
-```
+SAMTOOLS=/usr/local/packages/samtools-1.20/bin/samtools
 
+BAM="Cbombi_ONT.bam"
+
+NAMES="SL19_read_names.txt"
+
+# output names
+
+OUT_PREFIX="Cbombi_ONT.SL19"
+
+OUT_BAM="${OUT_PREFIX}.sorted.bam"
+
+# filter -> sort -> index
+
+$SAMTOOLS view -b -N "$NAMES" "$BAM" \
+
+  | $SAMTOOLS sort -o "$OUT_BAM" -
+
+$SAMTOOLS index "$OUT_BAM"
+```
 
 ## Semi-automated transcript evidence generation 
 ```
-stringtie-2.2.3/stringtie /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/ONT/Cbombi_ONT.bam --fr -f 0.5 -c 3 -l CbWHA -p 8 -L -R -o Cbombi_transcript.gtf
+stringtie-2.2.3/stringtie Cbombi_ONT.SL19.sorted.bam --fr -f 0.5 -c 3 -l CbWHA1_ -p 8 -L -R -o Cbombi_transcript.gtf
 ```
 Stringtie is "isoform aware" but doesn't really handle polycistron well. <br />
-First filter the transcript by TPM and coverage. To ensure a medium filtering that will remove polycistron and low abundance transcripts, set TPM to 2.5 and cov to 8 using [filter_stringtie_gtf.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/filter_stringtie_gtf.py). <br />
+First, filter the transcript by TPM and coverage. To ensure a medium filtering that will remove polycistron and low abundance transcripts, set TPM to 2.5 and cov to 8 using [filter_stringtie_gtf.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/filter_stringtie_gtf.py). <br />
 A manual step to remove the wrong transcript evidence annotation was added using []() <br />
 To perform this step, open IGV with the bam file used to create the stringtie gft and the transdecoder gff3 output. Then identify every transcript evidence that is wrong based on ORF presence and soft clipping on reads on the right AND the left of the transcript indicating of the presence of the spliced-leader and of the polyA tail. Remove every transcript evidence that is overlapping, this is indicative of a polycistron. Record the transcript id in a txt file and use []() to remove them from the gft file. <br />
 Another step is to add missing annatation was aded using []() and to correct start/end using []()<br /> 
