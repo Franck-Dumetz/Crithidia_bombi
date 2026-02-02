@@ -79,7 +79,7 @@ seqkit locate -i -p TTAGGGTTAGGG Cb_hifi.asm.bp.p_ctg.fasta > HiFiCb_telomere.tx
 ## Finding rDNA loci
 We use Leishmania donovani ribosomal RNA sequences to locate them in C .bombi
 ```
-/usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta -subject /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/canu/rRNA/Ld5SrRNA.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
+/usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query Cbombi_genome_refined_renamed.fasta -subject Ld5.8S.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
 ```
 ## Finding local CNVs of maximum 1000bp
 ```
