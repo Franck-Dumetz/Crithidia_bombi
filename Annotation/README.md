@@ -43,11 +43,11 @@ SAMTOOLS=/usr/local/packages/samtools-1.20/bin/samtools
 
 BAM="Cbombi_ONT.bam"
 
-NAMES="SL19_read_names.txt"
+NAMES="SL10_read_names.txt"
 
 # output names
 
-OUT_PREFIX="Cbombi_ONT.SL19"
+OUT_PREFIX="Cbombi_ONT.SL10"
 
 OUT_BAM="${OUT_PREFIX}.sorted.bam"
 
