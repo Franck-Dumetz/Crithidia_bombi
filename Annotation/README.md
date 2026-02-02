@@ -62,7 +62,7 @@ $SAMTOOLS index "$OUT_BAM"
 
 ## Semi-automated transcript evidence generation 
 ```
-stringtie-2.2.3/stringtie Cbombi_ONT.SL19.sorted.bam --fr -f 0.5 -c 3 -l CbWHA1_ -p 8 -L -R -o Cbombi_transcript.gtf
+/usr/local/packages/stringtie-2.2.3/stringtie Cbombi_ONT.SL19.sorted.bam -fr -f 0.05 -l CbWHA1_ -p 8 -L -R -o Cbombi_SL19.gtf
 ```
 Stringtie is "isoform aware" but doesn't really handle polycistron well. <br />
 First, filter the transcript by TPM and coverage. To ensure a medium filtering that will remove polycistron and low abundance transcripts, set TPM to 2.5 and cov to 8 using [filter_stringtie_gtf.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/filter_stringtie_gtf.py). <br />
