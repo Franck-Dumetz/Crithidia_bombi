@@ -63,10 +63,25 @@ $SAMTOOLS index "$OUT_BAM"
 /usr/local/packages/stringtie-2.2.3/stringtie Cbombi_ONT.SL10.sorted.bam -L -p 8 -f 0.05 -l CbWHA1 -c 1 -g 10 -m 50 -o Cbombi_SL10_fullOption.gtf
 ```
 Stringtie is "isoform aware" but doesn't really handle polycistron well. <br />
-First, filter the transcript by TPM and coverage. To ensure a medium filtering that will remove polycistron and low abundance transcripts, set TPM to 2.5 and cov to 8 using [filter_stringtie_gtf.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/filter_stringtie_gtf.py). <br />
+First, filter the transcript by TPM and coverage. To ensure a medium filtering that will remove polycistron and low-abundance transcripts, set TPM to 2.5 and cov to 8 using [filter_stringtie_gtf.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/filter_stringtie_gtf.py). <br />
 A manual step to remove the wrong transcript evidence annotation was added using []() <br />
-To perform this step, open IGV with the BAM file used to create the stringtie gft and the transdecoder GFF3 output. Then identify every transcript evidence that is wrong based on ORF presence and soft clipping on reads on the right AND the left of the transcript, indicating the presence of the spliced-leader and of the polyA tail. Remove any overlapping transcript evidence; this indicates a polycistron. Record the transcript id in a txt file and use []() to remove them from the gft file. <br />
-Another step is to add missing annotation was aded using []() and to correct start/end using []()<br /> 
+To perform this step, open IGV with the BAM file used to create the stringtie gft and the transdecoder GFF3 output. Then identify every transcript evidence that is wrong based on ORF presence and soft clipping on reads on the right AND the left of the transcript, indicating the presence of the spliced-leader and of the polyA tail. Remove any overlapping transcript evidence; this indicates a polycistron. Record the transcript id in a to_remove.txt file and use the following line to remove them for the gtf. <br />
+```
+awk '
+  NR==FNR { gsub(/\r/,"",$1); if ($1!="") bad[$1]=1; next }
+
+  # parse transcript_id and gene_id from 9th column
+  {
+    tid=""; gid=""
+    if (match($0, /transcript_id "[^"]+"/)) { tid=substr($0, RSTART+14, RLENGTH-15) }
+    if (match($0, /gene_id "[^"]+"/))       { gid=substr($0, RSTART+9,  RLENGTH-10) }
+
+    if ((tid != "" && bad[tid]) || (gid != "" && bad[gid])) next
+    print
+  }
+' to-remove_stg_020226.txt Cbombi_transcript_TPM2.5_cov8.CbWHA1.renamed.gtf > filtered.gtf
+```
+Another step is to add missing annotation or split polycistrons made of a coding sequence and non-coding one. Create a file corr_anno.tsv with the trasncript code, start and end, andwas aded using []() and to correct start/end using []()<br /> 
 ## Identification of the longest ORF
 ```
 transdecoder-5.7.1/util/gtf_genome_to_cdna_fasta.pl /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/stringtie/Cbombi_transcript.gtf /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_genome_refined.fasta > Transdecoder_transcripts_2.5-8_Cb.fasta
