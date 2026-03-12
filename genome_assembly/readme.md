@@ -36,7 +36,7 @@ seqtk subseq /local/projects-t4/aberdeen2ro/SerreDLab-4/raw_reads/2024-08-22_Pac
 ```
 ## HiFiasm to assemble
 Use the following slurm script [hifi_slurm.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/genome_assembly/hifi_slurm.sh) <br />
-From the haplotig condenced fasta file, rename the T2T contigs with numbers in increasing size and the one of 1T with letter in increasing size and sort the fasta file
+From the haplotype condensed fasta file, rename the T2T contigs with numbers in increasing size and the one of 1T with letters in increasing size and sort the fasta file.
 ```
 seqkit sort Cbombi_genome_refined.fasta > Cbombi_genome_refined.sorted.fasta
 ```
@@ -54,6 +54,10 @@ samtools index Cbombi_reads2hifi.bam
 
 samtools depth Cbombi_reads2hifi.bam > Cbombi_depth.txt
 awk '{print $3}' Cbombi_depth.txt
+```
+## Indentifying duplicated contings and missassembly
+```
+minimap2 -x asm5 -DP Cb_hifi.asm.bp.p_ctg.fasta Cb_hifi.asm.bp.p_ctg.fasta > self.paf
 ```
 ## GC content calculation per contigs
 ```
@@ -77,7 +81,7 @@ seqkit locate -i -p TTAGGGTTAGGG Cb_hifi.asm.bp.p_ctg.fasta > HiFiCb_telomere.tx
 ```
 
 ## Finding rDNA loci
-We use Leishmania donovani ribosomal RNA sequences to locate them in C .bombi
+We use Leishmania donovani ribosomal RNA sequences to locate them in _C .bombi_
 ```
 /usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query Cbombi_genome_refined_renamed.fasta -subject Ld5.8S.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
 ```
