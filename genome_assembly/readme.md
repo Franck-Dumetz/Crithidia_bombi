@@ -52,8 +52,7 @@ minimap2 -ax map-hifi /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_h
 
 samtools index Cbombi_reads2hifi.bam
 
-samtools depth Cbombi_reads2hifi.bam > Cbombi_depth.txt
-awk '{print $3}' Cbombi_depth.txt
+samtools depth -aa Cbombi_reads2hifi.bam > Cbombi_depth.txt
 ```
 ## GC content calculation per contigs
 ```
