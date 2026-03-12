@@ -57,18 +57,18 @@ samtools depth -aa Cbombi_reads2hifi.bam > Cbombi_depth.txt
 ## GC content calculation per contigs
 ```
 awk '
->   BEGIN{FS=""; OFS="\t"}
->   /^>/{if(id!=""){
->          if(len>0) printf("%s\t%d\t%.6f\n", id, len, 100*gc/len);
->        }
->        id=substr($0,2); sub(/[ \t].*/,"",id);
->        len=0; gc=0; next}
->   {line=toupper($0);
->    gsub(/[^ACGT]/,"",line);
->    len+=length(line);
->    tmp=line; gc+=gsub(/[GC]/,"",tmp)}
->   END{if(id!="" && len>0) printf("%s\t%d\t%.6f\n", id, len, 100*gc/len)}
-> ' Cbombi_genome_refined.fasta > gc_per_contig.tsv
+   BEGIN{FS=""; OFS="\t"}
+   /^>/{if(id!=""){
+          if(len>0) printf("%s\t%d\t%.6f\n", id, len, 100*gc/len);
+        }
+        id=substr($0,2); sub(/[ \t].*/,"",id);
+        len=0; gc=0; next}
+   {line=toupper($0);
+    gsub(/[^ACGT]/,"",line);
+    len+=length(line);
+    tmp=line; gc+=gsub(/[GC]/,"",tmp)}
+   END{if(id!="" && len>0) printf("%s\t%d\t%.6f\n", id, len, 100*gc/len)}
+ ' Cbombi_genome_refined.fasta > gc_per_contig.tsv
 ```
 ## Finding telomeres
 ```
