@@ -55,7 +55,7 @@ samtools index Cbombi_reads2hifi.bam
 samtools depth Cbombi_reads2hifi.bam > Cbombi_depth.txt
 awk '{print $3}' Cbombi_depth.txt
 ```
-## Indentifying duplicated contings and missassembly
+## Identifying duplicated contigs and misassembly
 ```
 minimap2 -x asm5 -DP Cb_hifi.asm.bp.p_ctg.fasta Cb_hifi.asm.bp.p_ctg.fasta > self.paf
 ```
