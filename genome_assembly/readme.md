@@ -55,10 +55,6 @@ samtools index Cbombi_reads2hifi.bam
 samtools depth Cbombi_reads2hifi.bam > Cbombi_depth.txt
 awk '{print $3}' Cbombi_depth.txt
 ```
-## Identifying duplicated contigs and misassembly
-```
-minimap2 -x asm5 -DP Cb_hifi.asm.bp.p_ctg.fasta Cb_hifi.asm.bp.p_ctg.fasta > self.paf
-```
 ## GC content calculation per contigs
 ```
 awk '
@@ -79,11 +75,14 @@ awk '
 ```
 seqkit locate -i -p TTAGGGTTAGGG Cb_hifi.asm.bp.p_ctg.fasta > HiFiCb_telomere.txt
 ```
-
 ## Finding rDNA loci
 We use Leishmania donovani ribosomal RNA sequences to locate them in _C .bombi_
 ```
 /usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query Cbombi_genome_refined_renamed.fasta -subject Ld5.8S.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
+```
+## Identifying duplicated contigs and misassembly
+```
+minimap2 -x asm5 -DP Cb_hifi.asm.bp.p_ctg.fasta Cb_hifi.asm.bp.p_ctg.fasta > self.paf
 ```
 ## Finding local CNVs of maximum 1000bp
 ```
