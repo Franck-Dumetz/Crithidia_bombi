@@ -10,7 +10,7 @@ Software requirements: <br />
 - busco-5.4.3 <br />
 - filtlong-0.2.0 <br />
 - hifiasm-0.24.0 <br />
-- minimap2.1 <br />
+- minimap2-2.2.28 <br />
 - mummer-3.23 <br />
 - quast-5.2.0 <br />
 - samtools-1.20 <br />
