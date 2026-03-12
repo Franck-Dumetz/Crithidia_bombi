@@ -42,6 +42,9 @@ seqkit sort Cbombi_genome_refined.fasta > Cbombi_genome_refined.sorted.fasta
 ```
 ## BUSCO analysis
 ```
+export PATH=/usr/local/packages/metaeuk-6-a5d39d9/bin:$PATH
+export PATH=/usr/local/packages/bbtools-39.32:$PATH
+
 /usr/local/packages/busco-5.4.3/bin/busco -m genome -i /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco -f
 /usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco/busco
 ```
