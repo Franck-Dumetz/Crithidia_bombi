@@ -42,7 +42,7 @@ seqkit sort Cbombi_genome_refined.fasta > Cbombi_genome_refined.sorted.fasta
 ```
 ## BUSCO analysis
 ```
-/usr/local/packages/busco-5.4.3/bin/busco -m genome -i /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco --long -f
+/usr/local/packages/busco-5.4.3/bin/busco -m genome -i /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco -f
 /usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco/busco
 ```
 
@@ -101,7 +101,7 @@ bedtools coverage -a Cb_1000bin.bed -b /local/projects-t3/SerreDLab-3/fdumetz/Cr
 
 ## Finding the spliced leader sequence
 First step: identification of the spliced leader sequence using ONT DRS reads
-Extract the 50 first nucleotides of every ONT DRS
+Extract the first 50 nucleotides of every ONT DRS
 ```
 seqkit subseq -r 1:50 Cbombi_ONT.fasta > Cbombi_first50.fasta
 ```
@@ -110,7 +110,7 @@ Extract 100,000 sequences
 seqkit split -s 100000 Cbombi_first50.fasta -o Cbombi_split
 cat *.fasta > Cbombi_first50_100k.fasta
 ```
-Using meme to find enriched motifs
+Using MEME to find enriched motifs
 ```
 /usr/local/packages/meme-5.5.5/bin/meme Cbombi_first50_100k.filt.fasta -dna -oc . -mod zoops -nmotifs 10 -minw 20 -maxw 50 -maxsize 100000000000
 ```
