@@ -110,5 +110,5 @@ Make TSV with one-to-one ortholog assignments for each C.bombi gene using the .p
 ```
 diamond blastp -q Cb_transdecoder_6-12.fasta.transdecoder.pep -d Cfasiculata -o Cbombi_Cfasic.tsv -f 6 qseqid sseqid bitscore --max-target-seqs 1 --evalue 1e-5 --threads 8
 ```
-Using this TSV, the genome annotation was updated with the python script cb_gff.py
+This TSV was trimmed to only include genes with the suffix ".1.p1". The genome annotation was updated with the python script cb_gff.py
 
