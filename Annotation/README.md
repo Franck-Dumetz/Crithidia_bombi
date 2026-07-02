@@ -100,7 +100,7 @@ transdecoder-5.7.1/util/cdna_alignment_orf_to_genome_orf.pl Transdecoder_transcr
 ```
 ## Finding C. fasiculata orthologs using DIAMOND
 - diamond v2.0.4.142
-- 
+
 Make diamond database using C.fasiculata protein fasta 
 ```
 diamond makedb --in Cfasiculata.pep -d Cfasiculata
