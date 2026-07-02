@@ -100,11 +100,12 @@ transdecoder-5.7.1/util/cdna_alignment_orf_to_genome_orf.pl Transdecoder_transcr
 ```
 ## Finding C. fasiculata orthologs using DIAMOND
 - diamond v2.0.4.142
+- 
 Make diamond database using C.fasiculata protein fasta 
 ```
 diamond makedb --in Cfasiculata.pep -d Cfasiculata
 ```
-Make TSV with one-to-one ortholog assignments for each C.bombi gene
+Make TSV with one-to-one ortholog assignments for each C.bombi gene using the .pep output of Transdecoder
 ```
 diamond blastp -q Cb_transdecoder_6-12.fasta.transdecoder.pep -d Cfasiculata -o Cbombi_Cfasic.tsv -f 6 qseqid sseqid bitscore --max-target-seqs 1 --evalue 1e-5 --threads 8
 ```
