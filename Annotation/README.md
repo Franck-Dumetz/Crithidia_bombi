@@ -98,4 +98,15 @@ transdecoder-5.7.1/TransDecoder.Predict -t Transdecoder_transcripts_2.5-8_Cb.fas
 ```
 transdecoder-5.7.1/util/cdna_alignment_orf_to_genome_orf.pl Transdecoder_transcripts_2.5-8_Cb.fasta.transdecoder.gff3 Cb_2.8-5.gff3 Transdecoder_transcripts_2.5-8_Cb.fasta > Cb_2.5-8_annotation.transdecoder.genome.gff3
 ```
-## 
+## Finding C. fasiculata orthologs using DIAMOND
+- diamond v2.0.4.142
+Make diamond database using C.fasiculata protein fasta 
+```
+diamond makedb --in Cfasiculata.pep -d Cfasiculata
+```
+Make TSV with one-to-one ortholog assignments for each C.bombi gene
+```
+diamond blastp -q Cb_transdecoder_6-12.fasta.transdecoder.pep -d Cfasiculata -o Cbombi_Cfasic.tsv -f 6 qseqid sseqid bitscore --max-target-seqs 1 --evalue 1e-5 --threads 8
+```
+Using this TSV, the genome annotation was updated with the python script cb_gff.py
+
