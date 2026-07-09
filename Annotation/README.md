@@ -112,3 +112,13 @@ diamond blastp -q Cb_transdecoder_6-12.fasta.transdecoder.pep -d Cfasiculata -o 
 ```
 This TSV was trimmed to only include genes with the suffix ".1.p1". The genome annotation was updated with the python script cb_gff.py.
 
+## Assigning remaining genes
+
+The sequences of the genes that didn't have a significant match with any C. fasiculata protein given the parameters above were extracted and BLAST was run on them. A database was created by merging the protein fastas of the following organisms:
+- *Crithidia fasiculata*
+- *Leishmania donovani*
+- *Leishmania major*
+- *Leptomonas pyrrhocoris*
+- *Leptomonas seymouri*
+- *Trypanosoma brucei*
+
