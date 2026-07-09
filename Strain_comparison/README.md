@@ -35,8 +35,18 @@ bcftools view -v snps variants_filt.vcf.gz -Oz -o snps.vcf.gz
 ```
 
 ## Variant Annotation
-*Add where the gff and fasta files were put
+snpEff was downloaded using conda. A directory Cbombi was created in ~/.conda/envs/snpEff-env/share/snpeff-5.4.0c-0/data/, and the gff and genome fasta files were uploaded to that folder and renamed "genes.gff" and "sequences.fa". In the file snpEff.config, this line was added at the bottom:
+```
+Cbombi.genome : Crithidia_bombi
+```
 The following command was used to annotate the snps:
 ```
 snpEff ann -v Cbombi swiss_indels.vcf.gz > swiss_indels_ann.vcf
 ```
+To isolate the number of missense mutations, this command was used:
+```
+bcftools view -i 'INFO/ANN ~ "missense_variant"' swiss_indels_ann.vcf -Oz -o missense.vcf.gz
+```
+And the same command was used to isolate the other types of SNPs
+
+The same steps were used to annotate the indels.
