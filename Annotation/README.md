@@ -106,7 +106,7 @@ We made the diamond database using C.fasiculata protein fasta using the followin
 ```
 diamond makedb --in Cfasiculata.pep -d Cfasiculata
 ```
-The database was used to make a TSV with one-to-one ortholog assignments for each C.bombi gene using the .pep output of Transdecoder.
+The database was used to make a TSV with ortholog assignments for each C.bombi gene using the .pep output of Transdecoder.
 ```
 diamond blastp -q Cb_transdecoder_6-12.fasta.transdecoder.pep -d Cfasiculata -o Cbombi_Cfasic.tsv -f 6 qseqid sseqid bitscore --max-target-seqs 1 --evalue 1e-5 --threads 8
 ```
