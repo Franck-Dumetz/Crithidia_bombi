@@ -4,18 +4,19 @@
 - bwa 0.7.17-r1188
 - bcftools 1.11
 - snpEff 5.4c
+- cnvkit 0.9.3
 
 ## Alignment
 Reads from Swiss strain 08.076 were obtained from SRA (Accession numbers ERR2214503, ERR2214504, ERR2214505). All reads were combined into one fastq file and aligned to our WHA1 assembled genome using the Burrows-Wheeler Alignment.
 ```
-bwa mem -t 8 ../cbombi/CbWHA1_assembly.noBDEF.fasta fastqs/08706.fastq > alignment.sam
+bwa mem -t 8 CbWHA1_genome.fasta fastqs/08706.fastq > alignment.sam
 ```
 The SAM file was converted to a BAM file for the next steps.
 
 ## Variant Calling
 The following command was used to get variants from the alignment:
 ```
-bcftools mpileup -f ../cbombi/CbWHA1_assembly.noBDEF.fasta alignment.bam | bcftools call -mv -Oz -o variants.vcf.gz
+bcftools mpileup -f CbWHA1_genome.fasta alignment.bam | bcftools call -mv -Oz -o variants.vcf.gz
 ```
 Variants with a read depth < 25 and a quality score < 20 were filtered out using the following command:
 ```
@@ -41,12 +42,28 @@ Cbombi.genome : Crithidia_bombi
 ```
 The following command was used to annotate the snps:
 ```
-snpEff ann -v Cbombi swiss_indels.vcf.gz > swiss_indels_ann.vcf
+snpEff ann -v Cbombi snps.vcf.gz > snps_ann.vcf
 ```
 To isolate the number of missense mutations, this command was used:
 ```
-bcftools view -i 'INFO/ANN ~ "missense_variant"' swiss_indels_ann.vcf -Oz -o missense.vcf.gz
+bcftools view -i 'INFO/ANN ~ "missense_variant"' snps_ann.vcf -Oz -o missense.vcf.gz
 ```
 And the same command was used to isolate the other types of SNPs
 
 The same steps were used to annotate the indels.
+
+## CNVs
+Before running cnvkit, WHA1 ONT reads were mapped to the WHA1 genome, and the bam file is used as a normal reference for cnvkit.
+
+The following command was run using cnvkit:
+```
+cnvkit.py batch Cbombi_swiss.bam -n Cbombi_WHA1.bam -f CbWHA1_genome.fasta -m wgs -d cnvs
+```
+### Primary Method
+In the output folder, there is a file Cbombi_swiss.cns containing genomic regions where adjacent bin were merged into high-confidence copy-number segments. To keep only the segments that represented true CNVs, we ran the script filter_cns.py. We used the log2 value for each segment to determine whether they were true CNVs, using log2 < -1.0 and log2 > 1.0 as cutoffs. 
+
+To get further information on whether these genomic regions overlapped with any coding regions, the following command was run:
+```
+bedtools intersect -a Cbombi_swiss_filt.cns -b annotation.gff3 -wa -wb > cns_gene_overlap.txt
+```
+
