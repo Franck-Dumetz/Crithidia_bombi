@@ -100,6 +100,7 @@ transdecoder-5.7.1/util/cdna_alignment_orf_to_genome_orf.pl Transdecoder_transcr
 ```
 ## Finding C. fasiculata orthologs using DIAMOND
 - diamond v2.0.4.142
+- blast 2.10.0+
 
 
 We made the diamond database using C.fasiculata protein fasta using the following command: 
@@ -121,4 +122,10 @@ The sequences of the genes that didn't have a significant match with any C. fasi
 - *Leptomonas pyrrhocoris*
 - *Leptomonas seymouri*
 - *Trypanosoma brucei*
+
+A BLAST database was built using the following command:
+```
+makeblastdb -in tritryp.fasta -dbtype prot -out bombi_search
+```
+
 
