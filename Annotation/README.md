@@ -102,13 +102,13 @@ transdecoder-5.7.1/util/cdna_alignment_orf_to_genome_orf.pl Transdecoder_transcr
 - diamond v2.0.4.142
 
 
-Make diamond database using C.fasiculata protein fasta 
+We made the diamond database using C.fasiculata protein fasta using the following command: 
 ```
 diamond makedb --in Cfasiculata.pep -d Cfasiculata
 ```
-Make TSV with one-to-one ortholog assignments for each C.bombi gene using the .pep output of Transdecoder
+The database was used to make a TSV with one-to-one ortholog assignments for each C.bombi gene using the .pep output of Transdecoder.
 ```
 diamond blastp -q Cb_transdecoder_6-12.fasta.transdecoder.pep -d Cfasiculata -o Cbombi_Cfasic.tsv -f 6 qseqid sseqid bitscore --max-target-seqs 1 --evalue 1e-5 --threads 8
 ```
-This TSV was trimmed to only include genes with the suffix ".1.p1". The genome annotation was updated with the python script cb_gff.py
+This TSV was trimmed to only include genes with the suffix ".1.p1". The genome annotation was updated with the python script cb_gff.py.
 
