@@ -59,11 +59,16 @@ The following command was run using cnvkit:
 ```
 cnvkit.py batch Cbombi_swiss.bam -n Cbombi_WHA1.bam -f CbWHA1_genome.fasta -m wgs -d cnvs
 ```
-### Primary Method
-In the output folder, there is a file Cbombi_swiss.cns containing genomic regions where adjacent bin were merged into high-confidence copy-number segments. To keep only the segments that represented true CNVs, we ran the script filter_cns.py. We used the log2 value for each segment to determine whether they were true CNVs, using log2 < -1.0 and log2 > 1.0 as cutoffs. 
+### Primary Analysis
+In the output folder, there is a file Cbombi_swiss.cns containing genomic regions where adjacent bins were merged into high-confidence copy-number segments. To keep only the segments that represented true CNVs, we ran the script filter_cns.py. We used the log2 value for each segment to determine whether they were true CNVs, using log2 < -1.0 and log2 > 1.0 as cutoffs. 
 
 To get further information on whether these genomic regions overlapped with any coding regions, the following command was run:
 ```
 bedtools intersect -a Cbombi_swiss_filt.cns -b annotation.gff3 -wa -wb > cns_gene_overlap.txt
 ```
 
+### Secondary Analysis
+In the output folder, there is a file called Cbombi_swiss.cnr containing bin-level statistics, including log2, for the entire genome (bin size was by default 500bp). The same bedtools intersect command from above was run using the .cnr file, and the script count-cnvs.py was used to calculate the log2 for each gene and determine which ones are CNVs. The cnr file provides a log2 and a confidence value for each bin, so the log2 for each gene was calculated using the equation:
+$$
+gene_log2 = \frac{\sum^{gene_bins}log2 \times confidence \times percent}{\sum^{gene_bins} confidence \times percent}
+$$
