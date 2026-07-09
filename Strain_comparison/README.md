@@ -75,3 +75,7 @@ gene\_log2 = \frac{\sum^{gene\_bins}log2 \times confidence \times percent}{\sum^
 ```
 
 where gene_bins refers to the bins that overlap a gene and percent refers to how much of the gene each bin covers.
+
+Before comparison with the primary analysis, genes that were identified as CNVs that has less than 50% coverage by the bins were removed from the secondary analysis results. Similarly, genes with less than 50% coverage by the CNV genomic regions were removed from the primary analysis results.
+
+The results from both analyses were compared to find overlapping genes and find discrepancies, including whether genes were near the CNV calling thresholds, had low coverage by CNV bins, or differed due to other factors.
