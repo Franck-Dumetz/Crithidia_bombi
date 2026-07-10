@@ -1,11 +1,11 @@
 # Strain Comparison and Variant Analysis Between CbWHA1 and 08.076
 
 ## Software
-- bwa 0.7.17-r1188
 - bcftools 1.11
 - bedtools v2.27.1
-- snpEff 5.4c
+- bwa 0.7.17-r1188
 - cnvkit 0.9.3
+- snpEff 5.4c
 
 ## Alignment
 Reads from Swiss strain 08.076 were obtained from SRA (Accession numbers ERR2214503, ERR2214504, ERR2214505). All reads were combined into one fastq file and aligned to our WHA1 assembled genome using the Burrows-Wheeler Alignment.
