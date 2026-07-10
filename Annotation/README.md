@@ -127,5 +127,8 @@ A BLAST database was built using the following command:
 ```
 makeblastdb -in tritryp.fasta -dbtype prot -out bombi_search
 ```
-
-
+And BLAST was run using the following command:
+```
+blastx -query missing_genes.fasta -db bombi_search -outfmt 6 -evalue 1e-5 -max_target_seqs 10 -num_threads 24 -out blast_missing_genes.tsv
+```
+After analyzing the tsvs, annotations were added to the CDSs if ortholog matches were > 75% identity.
