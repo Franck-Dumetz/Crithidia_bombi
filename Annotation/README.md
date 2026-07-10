@@ -131,4 +131,4 @@ And BLAST was run using the following command:
 ```
 blastx -query missing_genes.fasta -db bombi_search -outfmt 6 -evalue 1e-5 -max_target_seqs 10 -num_threads 24 -out blast_missing_genes.tsv
 ```
-After analyzing the TSV, annotations were added to the CDSs if ortholog matches were > 75% identity.
+The best match ortholog for each gene was added to the annotation.
