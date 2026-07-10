@@ -3,6 +3,7 @@
 ## Software
 - bwa 0.7.17-r1188
 - bcftools 1.11
+- bedtools v2.27.1
 - snpEff 5.4c
 - cnvkit 0.9.3
 
