@@ -10,7 +10,7 @@
 ## Alignment
 Reads from Swiss strain 08.076 were obtained from SRA (Accession numbers ERR2214503, ERR2214504, ERR2214505). All reads were combined into one fastq file and aligned to our WHA1 assembled genome using the Burrows-Wheeler Alignment.
 ```
-bwa mem -t 8 CbWHA1_genome.fasta fastqs/08706.fastq > alignment.sam
+bwa mem -t 8 CbWHA1_genome.fasta fastqs/08076.fastq > alignment.sam
 ```
 The SAM file was converted to a BAM file for the next steps.
 
