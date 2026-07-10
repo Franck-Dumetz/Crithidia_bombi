@@ -68,7 +68,7 @@ bedtools intersect -a Cbombi_swiss_filt.cns -b annotation.gff3 -wa -wb > cns_gen
 ```
 
 ### Secondary Analysis
-In the output folder, there is a file called Cbombi_swiss.cnr containing bin-level statistics, including log2, for the entire genome (bin size was by default 500bp). The same bedtools intersect command from above was run using the .cnr file, and the script cnr_cnvs.py was used to calculate the log2 for each gene and determine which ones are CNVs. The cnr file provides a log2 and a confidence value for each bin, so the log2 for each gene was calculated using the equation:
+In the output folder, there is a file called Cbombi_swiss.cnr containing bin-level statistics, including log2, for the entire genome (bin size was set to 94bp). The same bedtools intersect command from above was run using the .cnr file, and the script cnr_cnvs.py was used to calculate the log2 for each gene and determine which ones are CNVs. The cnr file provides a log2 and a confidence value for each bin, so the log2 for each gene was calculated using the equation:
 
 ```math
 gene\_log2 = \frac{\sum^{gene\_bins}log2 \times confidence \times percent}{\sum^{gene\_bins} confidence \times percent}
