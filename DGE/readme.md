@@ -1,8 +1,9 @@
 # DGE Analysis: Swimming vs Adherent Samples
 - bwa 0.7.17-r1188
-- samtools 1.20
 - DESeq2 1.52.0
 - edgeR 4.10.1
+- samtools 1.20
+- topGO 2.64.0
 
 Aligned reads to genome using:
 ```
