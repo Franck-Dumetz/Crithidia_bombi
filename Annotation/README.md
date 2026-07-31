@@ -65,7 +65,7 @@ $SAMTOOLS index "$OUT_BAM"
 Stringtie is "isoform aware" but doesn't really handle polycistron well. <br />
 First, filter the transcript by TPM and coverage. To ensure a medium filtering that will remove polycistron and low-abundance transcripts, set TPM to 2.5 and cov to 8 using [filter_stringtie_gtf.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/filter_stringtie_gtf.py). <br />
 A manual step to remove the wrong transcript evidence annotation was added using []() <br />
-To perform this step, open IGV with the BAM file used to create the stringtie gft and the transdecoder GFF3 output. Then identify every transcript evidence that is wrong based on ORF presence and soft clipping on reads on the right AND the left of the transcript, indicating the presence of the spliced-leader and of the polyA tail. Remove any overlapping transcript evidence; this indicates a polycistron. Record the transcript id in a to_remove.txt file and use the following line to remove them for the gtf. <br />
+To perform this step, open IGV with the BAM file used to create the StringTie GFF and the TransDecoder GFF3 output. Then identify every transcript evidence that is wrong based on ORF presence and soft clipping on reads on the right AND the left of the transcript, indicating the presence of the spliced-leader and of the polyA tail. Remove any overlapping transcript evidence; this indicates a polycistron. Record the transcript ID in a to_remove.txt file and use the following line to remove them from the gtf. <br />
 ```
 awk '
   NR==FNR { gsub(/\r/,"",$1); if ($1!="") bad[$1]=1; next }
@@ -81,10 +81,27 @@ awk '
   }
 ' to-remove_stg_020226.txt Cbombi_transcript_TPM2.5_cov8.CbWHA1.renamed.gtf > filtered.gtf
 ```
-Another step is to add missing annotation or split polycistrons made of a coding sequence and non-coding one. Create a file corr_anno.tsv with the trasncript code, start and end, andwas aded using []() and to correct start/end using []()<br /> 
+Now comes the manual curation. Go transcript by transcript over the entire genome, creating 3 different files, and use the following script in the following order:
+  - remove inaccurate annotations using [remove_transcripts_csv.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/remove_transcripts_csv.py)
+```
+python remove_transcripts_csv.py --gtf your_input.gtf --csv to_remove.csv --out output.gtf
+```
+  - add missing annotations, or isoforms, using [add_transcripts_csv.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/add_transcripts_csv.py)
+```
+python add_transcripts_csv.py --gtf your_input.gtf --csv new_entries.csv --out output.gtf
+```
+  - Finally, correct annotations that are not correct using [correct_transcripts_csv.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/correct_transcripts_csv.py)
+```
+python correct_transcripts_csv.py --gtf your_input.gtf --csv to_correct.csv --out output.gtf
+```
+Now, we can rename the transcripts in the following format CbWHA1.chr#.000000.isoform# using [rename_loci_by_overlap.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/rename_loci_by_overlap.py). It also outputs a mapping key between the old names and the new names
+```
+python rename_loci_by_overlap.py --gtf input.gtf --out Cbombi_stringtie_final.gtf --map correspondence_key.csv
+```
+
 ## Identification of the longest ORF
 ```
-transdecoder-5.7.1/util/gtf_genome_to_cdna_fasta.pl /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/stringtie/Cbombi_transcript.gtf /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_genome_refined.fasta > Transdecoder_transcripts_2.5-8_Cb.fasta
+transdecoder-5.7.1/util/gtf_genome_to_cdna_fasta.pl Cbombi_stringtie_final.gtf Cbombi_assembly_final.fasta > Transdecoder_transcripts_2.5-8_Cb.fasta
 ```
 ```
 transdecoder-5.7.1/TransDecoder.LongOrfs -t Transdecoder_transcripts_2.5-8_Cb.fasta
@@ -93,7 +110,7 @@ transdecoder-5.7.1/TransDecoder.LongOrfs -t Transdecoder_transcripts_2.5-8_Cb.fa
 transdecoder-5.7.1/TransDecoder.Predict -t Transdecoder_transcripts_2.5-8_Cb.fasta --single_best_only
 ```
 ```
-/usr/local/packages/transdecoder-5.7.1/util/gtf_to_alignment_gff3.pl /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/stringtie/Cbombi_transcript.gtf > Cb_2.8-5.gff3
+transdecoder-5.7.1/util/gtf_to_alignment_gff3.pl Cbombi_stringtie_final.gtf > Cb_2.8-5.gff3
 ```
 ```
 transdecoder-5.7.1/util/cdna_alignment_orf_to_genome_orf.pl Transdecoder_transcripts_2.5-8_Cb.fasta.transdecoder.gff3 Cb_2.8-5.gff3 Transdecoder_transcripts_2.5-8_Cb.fasta > Cb_2.5-8_annotation.transdecoder.genome.gff3
