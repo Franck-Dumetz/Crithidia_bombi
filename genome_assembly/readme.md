@@ -20,9 +20,9 @@ Software requirements: <br />
 
 ## Preparing the data by filtering for reads longer than 1000 bp
 ```
-/usr/local/packages/filtlong-0.2.0/bin/filtlong --min_length 1000 --keep_percent 90 /local/projects-t3/EDS10/Cbombi_WHA1_20240805/PACBIO_DATA/EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz | gzip > Cbombi_hifi_filtered.fastq.gz
+/usr/local/packages/filtlong-0.2.0/bin/filtlong --min_length 1000 --keep_percent 90 EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz | gzip > Cbombi_hifi_filtered.fastq.gz
 
-zgrep '^@' /local/projects-t4/aberdeen2ro/SerreDLab-4/raw_reads/2024-08-22_Pacbio/Cbombi_WHA1_20240805/PACBIO_DATA/EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz > original_read_names.txt
+zgrep '^@' EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz > original_read_names.txt
 
 zgrep '^@' Cbombi_hifi_filtered.fastq.gz > filtered_read_names.txt
 ```
@@ -32,26 +32,26 @@ grep -v -f filtered_read_names.txt original_read_names.txt > filtered_out_read_n
 ```
 ## Extract reads and create a new fastq
 ```
-seqtk subseq /local/projects-t4/aberdeen2ro/SerreDLab-4/raw_reads/2024-08-22_Pacbio/Cbombi_WHA1_20240805/PACBIO_DATA/EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz filtered_out_read_names.txt > Cbombi_reads_Minus1000bp.fastq
+seqtk subseq EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz filtered_out_read_names.txt > Cbombi_reads_Minus1000bp.fastq
 ```
 ## HiFiasm to assemble
 Use the following slurm script [hifi_slurm.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/genome_assembly/hifi_slurm.sh) <br />
 From the haplotype condensed fasta file, rename the T2T contigs with numbers in increasing size and the one of 1T with letters in increasing size and sort the fasta file.
 ```
-seqkit sort Cbombi_genome_refined.fasta > Cbombi_genome_refined.sorted.fasta
+seqkit sort Cbombi_genome_refined.fasta > CbWHA1_assembly.final.fasta
 ```
 ## BUSCO analysis
 ```
 export PATH=/usr/local/packages/metaeuk-6-a5d39d9/bin:$PATH
 export PATH=/usr/local/packages/bbtools-39.32:$PATH
 
-/usr/local/packages/busco-5.4.3/bin/busco -m genome -i /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco -f
+/usr/local/packages/busco-5.4.3/bin/busco -m genome -i CbWHA1_assembly.final.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco -f
 /usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco/busco
 ```
 
 ## Determining coverage
 ```
-minimap2 -ax map-hifi /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.p_ctg.fasta /local/projects-t4/aberdeen2ro/SerreDLab-4/raw_reads/2024-08-22_Pacbio/Cbombi_WHA1_20240805/PACBIO_DATA/EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz | samtools sort -o Cbombi_reads2hifi.bam
+minimap2 -ax map-hifi CbWHA1_assembly.final.fasta EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz | samtools sort -o Cbombi_reads2hifi.bam
 
 samtools index Cbombi_reads2hifi.bam
 
@@ -81,25 +81,25 @@ BEGIN{FS=""; OFS="\t"}
 END{
   if(id!="" && len>0) printf("%s\t%d\t%.6f\n", id, len, 100*gc/len)
 }
-' CbWHA1_assembly.noBDEF.fasta > CbWHA1_assembly.noBDEF.GCcontent.tsv
+' CbWHA1_assembly.final.fasta > CbWHA1_assembly.final.fasta.GCcontent.tsv
 ```
 ## Finding telomeres
 ```
-seqkit locate -i -p TTAGGGTTAGGG Cb_hifi.asm.bp.p_ctg.fasta > HiFiCb_telomere.txt
+seqkit locate -i -p TTAGGGTTAGGG CbWHA1_assembly.final.fasta > HiFiCb_telomere.txt
 ```
 ## Finding rDNA loci
 We use Leishmania donovani ribosomal RNA sequences to locate them in _C .bombi_
 ```
-/usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query Cbombi_genome_refined_renamed.fasta -subject Ld5.8S.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
+/usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query CbWHA1_assembly.final.fasta -subject Ld5.8S.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
 ```
 ## Identifying duplicated contigs and misassembly
 ```
-minimap2 -x asm5 -DP Cb_hifi.asm.bp.p_ctg.fasta Cb_hifi.asm.bp.p_ctg.fasta > self.paf
+minimap2 -x asm5 -DP CbWHA1_assembly.final.fasta CbWHA1_assembly.final.fasta > self.paf
 ```
 ## Finding local CNVs of maximum 1000bp
 ```
-bedtools makewindows -g /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cb_hifi.asm.bp.hap1.p_ctg.fasta.fai -w 1000 > Cb_1000bin.bed
-bedtools coverage -a Cb_1000bin.bed -b /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_reads2hifi.bam > Cb_1000bin_cov.txt
+bedtools makewindows -g CbWHA1_assembly.final.fasta.fai -w 1000 > Cb_1000bin.bed
+bedtools coverage -a Cb_1000bin.bed -b Cbombi_reads2hifi.bam > Cb_1000bin_cov.txt
 ```
 
 ## Finding the spliced leader sequence
