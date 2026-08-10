@@ -42,7 +42,7 @@ seqkit sort Cbombi_assembly.fasta > CbWHA1_assembly.final.fasta
 export PATH=/usr/local/packages/metaeuk-6-a5d39d9/bin:$PATH
 export PATH=/usr/local/packages/bbtools-39.32:$PATH
 
-/usr/local/packages/busco-5.4.3/bin/busco -m genome -i CbWHA1_assembly.final.fasta --auto-lineage-euk --out /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco -f
+/usr/local/packages/busco-5.4.3/bin/busco -m genome -i CbWHA1_assembly.final.fasta --auto-lineage-euk -o busco3 --out_path /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi -f
 /usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco
 ```
 
