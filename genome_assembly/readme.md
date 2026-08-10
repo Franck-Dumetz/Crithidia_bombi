@@ -16,7 +16,6 @@ Software requirements: <br />
 - samtools-1.20 <br />
 - seqkit-0.7.2 <br />
 - seqtk-1.0-r63 <br />
-- trnascan-se-2.0.3 <br />
 
 ## Preparing the data by filtering for reads longer than 1000 bp
 ```
