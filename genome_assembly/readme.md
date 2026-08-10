@@ -2,8 +2,6 @@
 
 BioProject PRJNA1231061
 
-Table of content: <br />
-
 
 Software requirements: <br />
 - bedtools-2.27.1 <br />
