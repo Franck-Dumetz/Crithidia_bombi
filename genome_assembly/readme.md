@@ -35,7 +35,7 @@ seqtk subseq EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.
 Use the following slurm script [hifi_slurm.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/genome_assembly/hifi_slurm.sh) <br />
 From the haplotype condensed fasta file, rename the T2T contigs with numbers in increasing size and the one of 1T with letters in increasing size and sort the fasta file.
 ```
-seqkit sort Cbombi_genome_refined.fasta > CbWHA1_assembly.final.fasta
+seqkit sort Cbombi_assembly.fasta > CbWHA1_assembly.final.fasta
 ```
 ## BUSCO analysis
 ```
