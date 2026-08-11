@@ -52,7 +52,7 @@ minimap2 -ax map-hifi CbWHA1_assembly.final.fasta EDS10_20240819_R84050_PL14293-
 
 samtools index Cbombi_reads2hifi.bam
 
-samtools depth -aa Cbombi_reads2hifi.bam > Cbombi_depth.txt
+samtools coverage Cbombi_reads2hifi.bam > CbWHA1_cov.txt
 ```
 ## GC content calculation per contigs
 ```
