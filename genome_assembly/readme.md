@@ -42,8 +42,8 @@ seqkit sort Cbombi_assembly.fasta > CbWHA1_assembly.final.fasta
 export PATH=/usr/local/packages/metaeuk-6-a5d39d9/bin:$PATH
 export PATH=/usr/local/packages/bbtools-39.32:$PATH
 
-/usr/local/packages/busco-5.4.3/bin/busco busco -m genome -i /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/Final_annotation_genome/CbWHA1_assembly.final.fasta --auto-lineage-euk -o busco2 --out_path /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi -f
-/usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/busco
+/usr/local/packages/busco-5.4.3/bin/busco busco -m genome -i CbWHA1_assembly.final.fasta --auto-lineage-euk -o busco --out_path /path/Crithidia/hifi -f
+/usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /path/Crithidia/hifi/busco
 ```
 
 ## Determining coverage
@@ -98,7 +98,16 @@ minimap2 -x asm5 -DP CbWHA1_assembly.final.fasta CbWHA1_assembly.final.fasta > s
 bedtools makewindows -g CbWHA1_assembly.final.fasta.fai -w 1000 > Cb_1000bin.bed
 bedtools coverage -a Cb_1000bin.bed -b Cbombi_reads2hifi.bam > Cb_1000bin_cov.txt
 ```
-
+## Assessing the new assembly quality compared to the available assembly of _C. bombi_ 08.using QUAST
+```
+/usr/local/packages/quast-5.2.0/quast.py \
+  /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/Final_annotation_genome/CbWHA1_assembly.final.fasta \
+  -r /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/GCA_900240985.1_Cbombi_PLoSOne/GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna \
+  -g /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/Final_annotation_genome/Final_transdecoder/Cb_2.5-8_annotation.transdecoder.genome.gff3 \
+  --large --eukaryote \
+  -o /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/quast \
+  -t 8
+```
 ## Finding the spliced leader sequence
 First step: identification of the spliced leader sequence using ONT DRS reads
 Extract the first 50 nucleotides of every ONT DRS
