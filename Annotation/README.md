@@ -129,7 +129,7 @@ makeblastdb -in tritryp.fasta -dbtype prot -out bombi_search
 ```
 And BLAST was run using the following command:
 ```
-blastx -query missing_genes.fasta -db bombi_search -outfmt 6 -evalue 1e-5 -max_target_seqs 1 -num_threads 24 -out blast_missing_genes.tsv
+blastp -query missing_genes.fasta -db bombi_search -outfmt 6 -evalue 1e-5 -max_target_seqs 1 -num_threads 24 -out blast_missing_genes.tsv
 ```
 The best match ortholog for each gene was added to the annotation.
 
