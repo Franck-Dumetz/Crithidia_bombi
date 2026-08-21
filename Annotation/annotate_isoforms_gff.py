@@ -15,11 +15,11 @@ product/ortholog annotation belongs on all of them, not just one pick.
 
 Inputs:
     1. The CDS-harmonized GFF3 from harmonize_isoform_CDS.py -- all
-       12,239 original isoform mRNA records, CDS already forced to match
+        original isoform mRNA records, CDS already forced to match
        within CD-HIT-confirmed same-gene clusters (1,591 genes / 1,684
        isoforms). Left AS-IS (independently-called CDS per isoform) for
        the 352 multi-isoform genes CD-HIT did NOT cluster -- see below.
-    2. The student's CfCl/Ld/Lm/Lp/Ls/Tb-ortholog-transferred GFF3
+    2. CfCl/Ld/Lm/Lp/Ls/Tb-ortholog-transferred GFF3
        (gene_product + N_ortholog attributes on CDS lines), matched by
        gene ID (her file already picked one isoform per gene; the
        annotation is a gene-level fact regardless of which isoform
@@ -27,17 +27,6 @@ Inputs:
 
 Output: every mRNA/isoform is kept, with every one of a gene's isoforms'
 CDS lines carrying the same gene_product/ortholog attributes.
-
-The 352 genes with multiple isoforms whose ORFs CD-HIT did NOT find
-similar enough to cluster (<98% identity/95% coverage) are intentionally
-left with independently-called CDS per isoform, NOT force-collapsed --
-there's no computational evidence here of which candidate ORF (if any)
-is correct, or whether they're genuinely different proteins. These are
-written to a separate log, flagged for resolution once proteomics
-peptide-to-protein-position results are back: check whether the
-candidate ORFs have distinct, non-overlapping peptide support (real
-evidence of different proteins) or whether only one is actually detected
-(pick that one).
 
 Usage:
     python3 annotate_isoforms_gff.py \\
