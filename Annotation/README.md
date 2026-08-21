@@ -3,6 +3,7 @@
 BioSample
 
 Software requirements: <br />
+- cd-hit
 - dorado-0.8.1
 - EMBOSS
 - minimap-2.1
@@ -112,7 +113,8 @@ transdecoder-5.7.1/util/gtf_to_alignment_gff3.pl Cbombi_stringtie_final.gtf > Cb
 ```
 transdecoder-5.7.1/util/cdna_alignment_orf_to_genome_orf.pl Transdecoder_transcripts_2.5-8_Cb.fasta.transdecoder.gff3 Cb_2.8-5.gff3 Transdecoder_transcripts_2.5-8_Cb.fasta > Cb_2.5-8_annotation.transdecoder.genome.gff3
 ```
-## Isoforms ORF collapsing
+## Reducing isoform redundancy and harmonizing CDS coordinates across isoforms of the same gene
 ```
 cd-hit -i Transdecoder_transcripts_2.5-8_Cb.fasta.transdecoder.pep -o transdecoder_collapsed.pep -c 0.98 -aL 0.95 -M 0 -T 0 -d 0
 ```
+[harmonize_isoform_CDS.py]() uses the CD-HIT .clstr file to force every isoform's CDS coordinates onto the same-gene cluster's representative, and recomputes that isoform's own 5'/3' UTR boundaries to stay consistent with its own (unchanged) exon span. It only acts on clusters where every member shares the same GFF3 gene parent; everything else is left untouched and logged.
