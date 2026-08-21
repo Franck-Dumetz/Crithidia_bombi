@@ -2,9 +2,6 @@
 
 BioSample
 
-Table of content: <br />
-
-
 Software requirements: <br />
 - dorado-0.8.1
 - EMBOSS
