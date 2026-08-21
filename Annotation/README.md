@@ -117,5 +117,5 @@ transdecoder-5.7.1/util/cdna_alignment_orf_to_genome_orf.pl Transdecoder_transcr
 ```
 ## Isoforms ORF collapsing
 ```
-cd-hit -i Transdecoder_transcripts_2.5-8_Cb.fasta.transdecoder.pep -o transdecoder_collapsed.pep -c 0.98 -aL 0.95 -M 0 -T 0
+cd-hit -i Transdecoder_transcripts_2.5-8_Cb.fasta.transdecoder.pep -o transdecoder_collapsed.pep -c 0.98 -aL 0.95 -M 0 -T 0 -d 0
 ```
