@@ -3,9 +3,7 @@
 Add gene-level product/ortholog annotation to EVERY isoform of a gene,
 without collapsing/dropping isoform records.
 
-This replaces collapse_and_annotate_gff.py's approach of picking one
-representative mRNA per gene and discarding the rest. The correct model
-here (trypanosomatids are effectively intron-less) is: one gene = one ORF,
+The correct model here (trypanosomatids are effectively intron-less) is: one gene = one ORF,
 and different assembled "isoforms" mostly reflect different trans-splice
 acceptor / polyadenylation site choices -- i.e. different 5'/3' UTR
 boundaries around the SAME coding sequence, not different proteins. So
