@@ -9,25 +9,8 @@ PER TRANSCRIPT, so different assembled isoforms of the same gene can end
 up with slightly different CDS start/stop calls even when they really
 encode the same protein (assembly/prediction noise in transcript
 boundaries). CD-HIT clustering on the .pep file tells you which ORFs are
-essentially the same protein (>=98% identity / 95% coverage in this
-project) -- this script uses that to force all same-gene isoforms in a
+essentially the same protein; this script uses that to force all same-gene isoforms in a
 cluster onto the CDS coordinates of CD-HIT's chosen representative.
-
-IMPORTANT SAFETY CHECK (found in this dataset -- 651 of 2242 multi-member
-CD-HIT clusters, ~29%): a CD-HIT cluster does NOT guarantee members come
-from the same gene locus. In this genome specifically (lots of tandem/
-dispersed gene duplication -- see e.g. the CRE2/mini-exon work), many
-clusters merge near-identical PARALOGS at entirely different loci (e.g.
-CbWHA1.05.000230 clustering with CbWHA1.17.000230). Harmonizing those
-would incorrectly collapse two distinct genes onto one CDS. This script
-only harmonizes clusters where every member shares the same GFF3 gene
-parent; mixed-gene clusters are left untouched and logged separately for
-manual review.
-
-This dataset is effectively intron-less (exon count == CDS count == mRNA
-count in the source GFF3), so each mRNA has exactly one CDS interval --
-the script assumes this and will flag (not silently mishandle) any mRNA
-with more than one CDS line.
 
 Usage:
     python3 harmonize_isoform_CDS.py \\
