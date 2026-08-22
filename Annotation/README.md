@@ -117,7 +117,7 @@ transdecoder-5.7.1/util/cdna_alignment_orf_to_genome_orf.pl Transdecoder_transcr
 ```
 cd-hit -i Transdecoder_transcripts_2.5-8_Cb.fasta.transdecoder.pep -o transdecoder_collapsed.pep -c 0.98 -aL 0.95 -M 0 -T 0 -d 0
 ```
-[harmonize_isoform_CDS.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/annotate_isoforms_gff.py) uses the CD-HIT .clstr file to force every isoform's CDS coordinates onto the same-gene cluster's representative, and recomputes that isoform's own 5'/3' UTR boundaries to stay consistent with its own (unchanged) exon span. It only acts on clusters where every member shares the same GFF3 gene parent; everything else is left untouched and logged.
+[harmonize_isoform_CDS.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/harmonize_isoform_CDS.py) uses the CD-HIT .clstr file to force every isoform's CDS coordinates onto the same-gene cluster's representative, and recomputes that isoform's own 5'/3' UTR boundaries to stay consistent with its own (unchanged) exon span. It only acts on clusters where every member shares the same GFF3 gene parent; everything else is left untouched and logged.
 ```
 python3 harmonize_isoform_CDS.py \
     Cb_2.5-8_annotation.transdecoder.genome.gff3 \
@@ -125,7 +125,7 @@ python3 harmonize_isoform_CDS.py \
     Cb_2.5-8_annotation.transdecoder.genome.CDSharmonized.gff3
 ```
 
-[annotate_isoforms_gff.py]() propagates the gene-level product/ortholog annotation above to every isoform of a gene (matched by gene ID, not by which specific isoform originally carried the annotation), without dropping any isoform records.
+[annotate_isoforms_gff.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/annotate_isoforms_gff.py) propagates the gene-level product/ortholog annotation above to every isoform of a gene (matched by gene ID, not by which specific isoform originally carried the annotation), without dropping any isoform records.
 ```
 python3 annotate_isoforms_gff.py \
     Cb_2.5-8_annotation.transdecoder.genome.CDSharmonized.gff3 \
