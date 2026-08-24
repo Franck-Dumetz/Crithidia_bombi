@@ -110,9 +110,9 @@ Merging the 2 sequences by adding 100 N in between since we don't know the numbe
 ## Assessing the new assembly quality compared to the available assembly of _C. bombi_ 08.using QUAST
 ```
 /usr/local/packages/quast-5.2.0/quast.py \
-  /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/Final_annotation_genome/CbWHA1_assembly.final.fasta \
+  CbWHA1_assembly.final_numbered.fasta \
   -r /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/GCA_900240985.1_Cbombi_PLoSOne/GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna \
-  -g /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/Final_annotation_genome/Final_transdecoder/Cb_2.5-8_annotation.transdecoder.genome.gff3 \
+  -g CbWHA1_full_annotation.final_numbered.gff3 \
   --large --eukaryote \
   -o /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/quast \
   -t 8
