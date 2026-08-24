@@ -105,7 +105,7 @@ samtools faidx CbWHA1_assembly.final.fasta CbWHA1_contig_a:104762-128850 > conti
 minimap2 -k15 -w5 -c CbWHA1_assembly.final.fasta contig_a_overlap_block.fasta
 ```
 This was confirmed by gfa file output by Hifiasm <br >
-Merging the 2 sequences by adding 100 N in between since we don't know the number of repeats using [merge_chr03_contig_a.py]() <br >
+Merging the 2 sequences by adding 100 N in between since we don't know the number of repeats using [merge_chr03_contig_a.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/genome_assembly/merge_chr03_contig_a.py) <br >
 
 ## Assessing the new assembly quality compared to the available assembly of _C. bombi_ 08.using QUAST
 ```
