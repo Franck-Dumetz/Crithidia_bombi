@@ -89,15 +89,24 @@ We use Leishmania donovani ribosomal RNA sequences to locate them in _C .bombi_
 ```
 /usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query CbWHA1_assembly.final.fasta -subject Ld5.8S.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
 ```
-## Identifying duplicated contigs and misassembly
+## Manual curation of single telomeric contigs
+Determining percentage of similarity
 ```
-minimap2 -x asm5 -DP CbWHA1_assembly.final.fasta CbWHA1_assembly.final.fasta > self.paf
+minimap2 -x asm5 -c -ccs CbWHA1_assembly.final.fasta CbWHA1_assembly.final.fasta > self.paf
+grep "contig_a" CbWHA1_selfalign.paf | grep "chr03"
 ```
-## Finding local CNVs of maximum 1000bp
+Double-checking by increasing the sensitivity
 ```
-bedtools makewindows -g CbWHA1_assembly.final.fasta.fai -w 1000 > Cb_1000bin.bed
-bedtools coverage -a Cb_1000bin.bed -b Cbombi_reads2hifi.bam > Cb_1000bin_cov.txt
+minimap2 -k15 -w5 --min-occ-floor=2 -c --cs CbWHA1_assembly.final.fasta CbWHA1_assembly.final.fasta > self_sensitive.paf
 ```
+checking for uniqueness of that sequence in the rest of the genome
+```
+samtools faidx CbWHA1_assembly.final.fasta CbWHA1_contig_a:104762-128850 > contig_a_overlap_block.fasta
+minimap2 -k15 -w5 -c CbWHA1_assembly.final.fasta contig_a_overlap_block.fasta
+```
+This was confirmed by gfa file output by Hifiasm <br >
+Merging the 2 sequences by adding 100 N in between since we don't know the number of repeats using [merge_chr03_contig_a.py]() <br >
+
 ## Assessing the new assembly quality compared to the available assembly of _C. bombi_ 08.using QUAST
 ```
 /usr/local/packages/quast-5.2.0/quast.py \
