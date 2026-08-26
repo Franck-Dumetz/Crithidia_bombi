@@ -9,7 +9,7 @@ Software requirements: <br />
 - filtlong-0.2.0 <br />
 - hifiasm-0.24.0 <br />
 - minimap2-2.2.28 <br />
-- mummer-3.23 <br />
+- mummer-4.0.1 <br />
 - quast-5.2.0 <br />
 - samtools-1.20 <br />
 - seqkit-0.7.2 <br />
