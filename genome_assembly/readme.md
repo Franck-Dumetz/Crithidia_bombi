@@ -111,11 +111,25 @@ Merging the 2 sequences by adding 100 N in between since we don't know the numbe
 ```
 /usr/local/packages/quast-5.2.0/quast.py \
   CbWHA1_assembly.final_numbered.fasta \
-  -r /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/GCA_900240985.1_Cbombi_PLoSOne/GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna \
+  -r /Crithidia/GCA_900240985.1_Cbombi_PLoSOne/GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna \
   -g CbWHA1_full_annotation.final_numbered.gff3 \
   --large --eukaryote \
   -o /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/quast \
   -t 8
+```
+## Assembly completeness and contiguity assessment using NUCmer
+```
+# 1. Align the two assemblies
+nucmer -p CbWHA1_vs_08076 GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna CbWHA1_assembly.final_final.fasta
+
+# 2. Filter alignments (keep only those > 1kb; -1 does 1-to-1 best alignment, common for contiguity/synteny plots)
+delta-filter -l 1000 -1 CbWHA1_vs_08076.delta > CbWHA1_vs_08076.filter.delta
+
+# 3. Generate the dot plot
+mummerplot --png -p CbWHA1_vs_08076 CbWHA1_vs_08076.filter.delta
+
+# (optional) tabular alignment stats/coords for the filtered set
+show-coords -rcl CbWHA1_vs_08076.filter.delta > CbWHA1_vs_08076.filter.coords
 ```
 ## Finding the spliced leader sequence
 First step: identification of the spliced leader sequence using ONT DRS reads
