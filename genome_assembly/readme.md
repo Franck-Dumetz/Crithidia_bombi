@@ -119,16 +119,12 @@ Merging the 2 sequences by adding 100 N in between since we don't know the numbe
 ```
 ## Assembly completeness and contiguity assessment using NUCmer
 ```
-# 1. Align the two assemblies
-nucmer -p CbWHA1_vs_08076 GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna CbWHA1_assembly.final_final.fasta
+/usr/local/packages/mummer-4.0.1/bin/nucmer --maxmatch -p CbWHA1vsCbombi_1000 GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna CbWHA1_assembly.final_final.fasta
 
-# 2. Filter alignments (keep only those > 1kb; -1 does 1-to-1 best alignment, common for contiguity/synteny plots)
-delta-filter -l 1000 -1 CbWHA1_vs_08076.delta > CbWHA1_vs_08076.filter.delta
+/usr/local/packages/mummer-4.0.1/bin/delta-filter -l 1000 CbWHA1vsCbombi_1000.delta > CbWHA1vsCbombi_1000.filter
 
-# 3. Generate the dot plot
-mummerplot --png -p CbWHA1_vs_08076 CbWHA1_vs_08076.filter.delta
+/usr/local/packages/mummer-4.0.1/bin/mummerplot --png --large -p CbWHA1vsCbombi_1000 CbWHA1vsCbombi_1000.filter
 
-# (optional) tabular alignment stats/coords for the filtered set
 show-coords -rcl CbWHA1_vs_08076.filter.delta > CbWHA1_vs_08076.filter.coords
 ```
 ## Finding the spliced leader sequence
