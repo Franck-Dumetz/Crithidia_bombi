@@ -1,4 +1,4 @@
-# Crithidia bombi genome assembly
+# _Crithidia bombi_ genome assembly
 
 BioProject PRJNA1231061
 
