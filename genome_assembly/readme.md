@@ -1,8 +1,5 @@
 # _Crithidia bombi_ genome assembly
 
-BioProject PRJNA1231061
-
-
 Software requirements: <br />
 - bedtools-2.27.1 <br />
 - busco-5.4.3 <br />
