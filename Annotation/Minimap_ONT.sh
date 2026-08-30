@@ -8,6 +8,6 @@
 #SBATCH --mem=30G                              # Memory per node
 #SBATCH --account=serre-lab
 
-minimap2 -ax map-ont -k14 -t 32 /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_genome_refined.fasta /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/ONT/Cbombi_swimming_ONT.fastq.gz | samtools sort -@ 8 -o /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/ONT/Cbombi_ONT.sorted.bam 
+minimap2 -ax map-ont -k14 -t 32 /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_genome_refined.fasta /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/ONT/Cbombi_swimming_ONT.fastq.gz | samtools sort -@ 8 -bhF 2308 -o /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/ONT/Cbombi_ONT.sorted.bam 
 
 samtools index /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/ONT/Cbombi_ONT.sorted.bam
