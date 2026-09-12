@@ -15,7 +15,7 @@ makeblastdb -in Lpassim_GCA_037349495.1_ASM3734949v1_genomic.fna -dbtype nucl -o
 
 ## Somy estimation using ploidyNGS and CNVkit
 We split the reads from the BAM file into single-chromosome BAM files < br>
-Then we used [ploidyNGS_perChr.slurm.sh]() to determine the allele frequency per chromosome <br >
+Then we used [ploidyNGS_perChr.slurm.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/ashome/Genome_comparison/ploidyNGS_perChr.slurm.sh) to determine the allele frequency per chromosome <br >
 
 CNVkit usage:
 ```
