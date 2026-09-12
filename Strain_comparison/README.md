@@ -58,7 +58,7 @@ Before running cnvkit, WHA1 ONT reads were mapped to the WHA1 genome, and the ba
 
 The following command was run using cnvkit:
 ```
-cnvkit.py batch Cbombi_swiss.bam -n Cbombi_WHA1.bam -f CbWHA1_genome.fasta -m wgs -d cnvs
+cnvkit.py batch 08.076_merged.bam -n /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/Cbombi_reads2hifi.bam -f CbWHA1_assembly.final_final.fasta -m wgs -d cnvs
 ```
 ### Primary Analysis
 In the output folder, there is a file Cbombi_swiss.cns containing genomic regions where adjacent bins were merged into high-confidence copy-number segments. To keep only the segments that represented true CNVs, we ran the script filter_cns.py. We used the log2 value for each segment to determine whether they were true CNVs, using log2 < -1.0 and log2 > 1.0 as cutoffs. 
