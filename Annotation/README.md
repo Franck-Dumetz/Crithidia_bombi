@@ -134,3 +134,5 @@ python3 annotate_isoforms_gff.py \
     Cb_2.5-8_annotation.transdecoder.genome.isoforms_annotated.gff3
 ```
 
+## Codon usage analysis
+[codon_usage.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/codon_usage.py) was used to determine codon usage and codon position skewage.
