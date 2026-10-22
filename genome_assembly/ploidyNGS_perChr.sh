@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=ploidyNGS_chr
-#SBATCH --output=/logs/%x.%A_%a.out
-#SBATCH --error=/logs/%x.%A_%a.err
+#SBATCH --output=ploidyNGS_perChr/logs/%x.%A_%a.out
+#SBATCH --error=ploidyNGS_perChr/logs/%x.%A_%a.err
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=24G
 #SBATCH --time=06:00:00
@@ -12,14 +12,21 @@
 set -euo pipefail
 
 # -------------------------
-# Paths
+# Paths (relative to the submission directory; override by exporting before sbatch)
 # -------------------------
-BAM_DIR="/ploidyNGS_perChr"
-OUT_DIR="/ploidyNGS_perChr"
+BAM_DIR="${BAM_DIR:-ploidyNGS_perChr}"
+OUT_DIR="${OUT_DIR:-ploidyNGS_perChr}"
 
-PLOIDYNGS_DIR="/ploidyNGS"
-VENV_ACTIVATE="/.venv/bin/activate"
-PLOIDYNGS_PY="/ploidyNGS.py"   # <-- FIXED (was pointing to the .sh)
+PLOIDYNGS_DIR="${PLOIDYNGS_DIR:-ploidyNGS}"
+VENV_ACTIVATE="${VENV_ACTIVATE:-${PLOIDYNGS_DIR}/.venv/bin/activate}"
+PLOIDYNGS_PY="${PLOIDYNGS_PY:-${PLOIDYNGS_DIR}/ploidyNGS.py}"
+
+# Resolve to absolute paths now, because the script cd's into PLOIDYNGS_DIR below
+BAM_DIR="$(cd "$BAM_DIR" && pwd)"
+mkdir -p "$OUT_DIR" && OUT_DIR="$(cd "$OUT_DIR" && pwd)"
+PLOIDYNGS_DIR="$(cd "$PLOIDYNGS_DIR" && pwd)"
+VENV_ACTIVATE="$(realpath "$VENV_ACTIVATE")"
+PLOIDYNGS_PY="$(realpath "$PLOIDYNGS_PY")"
 
 THREADS="${SLURM_CPUS_PER_TASK:-8}"
 

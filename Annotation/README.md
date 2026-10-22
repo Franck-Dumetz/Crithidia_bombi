@@ -13,7 +13,7 @@ Software requirements: <br />
 
 ## Basecalling using Dorado
 ```
-dorado-0.8.1/bin/dorado basecaller --device cuda:1 --emit-fastq --min-qscore 7 /usr/local/packages/dorado-0.8.1/models/rna004_130bps_sup@v5.1.0 /local/projects-t2/RDMIN/SEQUENCE/20250513-MN23690_Cbombi_swimming_FranckDumetz-Blyss/20250513-MN23690/Cbombi_swimming/20250513_1621_MN23690_FBC11489_6cc52add/pod5_skip > Cbombi_swimming_ONT.fastq
+dorado basecaller --device cuda:1 --emit-fastq --min-qscore 7 models/rna004_130bps_sup@v5.1.0 Cbombi_swimming/pod5_skip > Cbombi_swimming_ONT.fastq
 ```
 
 ## Aligning reads to the reference genome
@@ -29,7 +29,7 @@ Filtering for the reads with a spliced-leader sequence in 5' <br />
 Use the [SL_finding.sh](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/SL_finding.sh) script to identify the reads with a SL. Basically, that script executes the EMBOSS subpackage fuzznuc to find motifs with a certain number of mismatches (to accommodate ONT miscalling). Then it filters for only the motifs that are in the 30 first nucleotide of the read. <br />
 Use a U-to-T converted fasta file to work with fuzznuc. <br />
 ```
-/SL_finding.sh -s ATAAGTATCAGTTTCTGTACTTTATTG -F /path/to/directory -m 4 -l 10 -o SL_calls_4 ONT_reads.fasta
+./SL_finding.sh -s ATAAGTATCAGTTTCTGTACTTTATTG -m 4 -l 10 -o SL_calls_4 ONT_reads.fasta
 ```
 Extracting read names from 
 ```
@@ -37,7 +37,7 @@ awk '{print $3}' Cbombi_swimming_ONT_SLlen19.tsv > SL19_read_names.txt
 ```
 Extracting reads with at least 19 nucleotides from the SL sequence
 ```
-SAMTOOLS=/usr/local/packages/samtools-1.20/bin/samtools
+SAMTOOLS=samtools
 
 BAM="Cbombi_ONT.bam"
 
@@ -58,7 +58,7 @@ $SAMTOOLS index "$OUT_BAM"
 
 ## Semi-automated transcript evidence generation 
 ```
-/usr/local/packages/stringtie-2.2.3/stringtie Cbombi_ONT.SL10.sorted.bam -L -p 8 -f 0.05 -l CbWHA1 -c 1 -g 10 -m 50 -o Cbombi_SL10_fullOption.gtf
+stringtie Cbombi_ONT.SL10.sorted.bam -L -p 8 -f 0.05 -l CbWHA1 -c 1 -g 10 -m 50 -o Cbombi_SL10_fullOption.gtf
 ```
 Stringtie is "isoform aware" but doesn't really handle polycistron well. <br />
 First, filter the transcript by TPM and coverage. To ensure a medium filtering that will remove polycistron and low-abundance transcripts, set TPM to 2.5 and cov to 8 using [filter_stringtie_gtf.py](https://github.com/Franck-Dumetz/Crithidia_bombi/blob/main/Annotation/filter_stringtie_gtf.py). <br />

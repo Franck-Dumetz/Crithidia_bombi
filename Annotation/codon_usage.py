@@ -10,6 +10,7 @@ content (GC1/GC2/GC3) are computed using the standard genetic code
 mitochondrial/maxicircle genome uses an alternative code, which is
 excluded here since only nuclear chromosomes are analyzed).
 """
+import os
 import re
 from collections import defaultdict
 
@@ -21,8 +22,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-UP = "/sessions/practical-optimistic-shannon/mnt/uploads"
-OUT = "/sessions/practical-optimistic-shannon/mnt/outputs"
+# Input/output directories, relative to the working directory by default.
+# Override with CODON_INPUT_DIR / CODON_OUTPUT_DIR environment variables.
+UP = os.environ.get("CODON_INPUT_DIR", ".")
+OUT = os.environ.get("CODON_OUTPUT_DIR", ".")
+os.makedirs(OUT, exist_ok=True)
 FASTA = f"{UP}/CbWHA1_assembly.final_final.fasta"
 GFF = f"{UP}/CbWHA1_full_annotation.final_numbered.TATE_reclassified.GAPDHcorrected.gff3"
 

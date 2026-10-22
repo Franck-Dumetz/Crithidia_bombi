@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=Cb_aligned
-#SBATCH --output=/local/projects-t3/SerreDLab-3/fdumetz/Crithidia/DGE/CbHisat.out
-#SBATCH --error=/local/projects-t3/SerreDLab-3/fdumetz/Crithidia/DGE/CbHisat.err
+#SBATCH --output=CbHisat.out
+#SBATCH --error=CbHisat.err
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=fdumetz@som.umaryland.edu
 #SBATCH --cpus-per-task=12
@@ -11,12 +11,14 @@
 set -euo pipefail
 
 # -------- CONFIG --------
-HISAT2_INDEX="/local/projects-t3/SerreDLab-3/fdumetz/Crithidia/DGE/Cb_WHA1_index/Cbombi_WHA1_ref"
-FASTQ_ROOT="/local/projects-t3/EDS10"                 # where we search
-ALIGN_OUTPUT_DIR="/local/projects-t3/SerreDLab-3/fdumetz/Crithidia/DGE/bam_files"
+# All paths are relative to the submission directory (run sbatch from the DGE working dir).
+# Override any of them by exporting the variable before sbatch.
+HISAT2_INDEX="${HISAT2_INDEX:-Cb_WHA1_index/Cbombi_WHA1_ref}"
+FASTQ_ROOT="${FASTQ_ROOT:-fastq}"                     # where we search
+ALIGN_OUTPUT_DIR="${ALIGN_OUTPUT_DIR:-bam_files}"
 SUM_DIR="${ALIGN_OUTPUT_DIR}/sum_dir"
 THREADS="${SLURM_CPUS_PER_TASK:-12}"
-PICARD="/usr/local/packages/picard-2.9.4/picard.jar"
+PICARD="${PICARD:-picard.jar}"           # path to picard.jar (tested with 2.9.4)
 
 mkdir -p "$ALIGN_OUTPUT_DIR" "$SUM_DIR"
 
@@ -54,7 +56,7 @@ echo "R1: $FILE1"
 echo "R2: $FILE2"
 
 # -------- ALIGN --------
-/usr/local/packages/hisat2-2.2.1/hisat2 \
+hisat2 \
   -x "$HISAT2_INDEX" \
   -1 "$FILE1" -2 "$FILE2" \
   -S "$ALIGN_OUTPUT_DIR/${SAMPLE}.sam" \

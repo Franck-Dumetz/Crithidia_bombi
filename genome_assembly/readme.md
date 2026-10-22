@@ -14,7 +14,7 @@ Software requirements: <br />
 
 ## Preparing the data by filtering for reads longer than 1000 bp
 ```
-/usr/local/packages/filtlong-0.2.0/bin/filtlong --min_length 1000 --keep_percent 90 EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz | gzip > Cbombi_hifi_filtered.fastq.gz
+filtlong --min_length 1000 --keep_percent 90 EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz | gzip > Cbombi_hifi_filtered.fastq.gz
 
 zgrep '^@' EDS10_20240819_R84050_PL14293-001_1-1-A01_bc2093-bc2093.hifi_reads.fastq.gz > original_read_names.txt
 
@@ -36,11 +36,10 @@ seqkit sort Cbombi_assembly.fasta > CbWHA1_assembly.final.fasta
 ```
 ## BUSCO analysis
 ```
-export PATH=/usr/local/packages/metaeuk-6-a5d39d9/bin:$PATH
-export PATH=/usr/local/packages/bbtools-39.32:$PATH
+# metaeuk and bbtools must be on your PATH
 
-/usr/local/packages/busco-5.4.3/bin/busco busco -m genome -i CbWHA1_assembly.final.fasta --auto-lineage-euk -o busco --out_path /path/Crithidia/hifi -f
-/usr/local/packages/busco-5.4.3/scripts/generate_plot.py -wd /path/Crithidia/hifi/busco
+busco -m genome -i CbWHA1_assembly.final.fasta --auto-lineage-euk -o busco --out_path . -f
+generate_plot.py -wd busco
 ```
 
 ## Determining coverage
@@ -84,7 +83,7 @@ seqkit locate -i -p TTAGGGTTAGGG CbWHA1_assembly.final.fasta > HiFiCb_telomere.t
 ## Finding rDNA loci
 We use Leishmania donovani ribosomal RNA sequences to locate them in _C .bombi_
 ```
-/usr/local/packages/ncbi-blast+-2.14.0/bin/blastn -query CbWHA1_assembly.final.fasta -subject Ld5.8S.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
+blastn -query CbWHA1_assembly.final.fasta -subject Ld5.8S.fasta -outfmt 7 -out ./HiFiCbBlastLd5S.txt
 ```
 ## Manual curation of single telomeric contigs
 Determining percentage of similarity
@@ -106,21 +105,21 @@ Merging the 2 sequences by adding 100 N in between since we don't know the numbe
 
 ## Assessing the new assembly quality compared to the available assembly of _C. bombi_ 08.using QUAST
 ```
-/usr/local/packages/quast-5.2.0/quast.py \
+quast.py \
   CbWHA1_assembly.final_numbered.fasta \
-  -r /Crithidia/GCA_900240985.1_Cbombi_PLoSOne/GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna \
+  -r GCA_900240985.1_Cbombi_PLoSOne/GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna \
   -g CbWHA1_full_annotation.final_numbered.gff3 \
   --large --eukaryote \
-  -o /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/quast \
+  -o quast \
   -t 8
 ```
 ## Assembly completeness and contiguity assessment using NUCmer
 ```
-/usr/local/packages/mummer-4.0.1/bin/nucmer --maxmatch -p CbWHA1vsCbombi_1000 GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna CbWHA1_assembly.final_final.fasta
+nucmer --maxmatch -p CbWHA1vsCbombi_1000 GCA_900240985.1_crithidia-bombi.GDC.2013.v1_genomic.fna CbWHA1_assembly.final_final.fasta
 
-/usr/local/packages/mummer-4.0.1/bin/delta-filter -l 1000 CbWHA1vsCbombi_1000.delta > CbWHA1vsCbombi_1000.filter
+delta-filter -l 1000 CbWHA1vsCbombi_1000.delta > CbWHA1vsCbombi_1000.filter
 
-/usr/local/packages/mummer-4.0.1/bin/mummerplot --png --large -p CbWHA1vsCbombi_1000 CbWHA1vsCbombi_1000.filter
+mummerplot --png --large -p CbWHA1vsCbombi_1000 CbWHA1vsCbombi_1000.filter
 
 show-coords -rcl CbWHA1_vs_08076.filter.delta > CbWHA1_vs_08076.filter.coords
 ```
@@ -137,7 +136,7 @@ cat *.fasta > Cbombi_first50_100k.fasta
 ```
 Using MEME to find enriched motifs
 ```
-/usr/local/packages/meme-5.5.5/bin/meme Cbombi_first50_100k.filt.fasta -dna -oc . -mod zoops -nmotifs 10 -minw 20 -maxw 50 -maxsize 100000000000
+meme Cbombi_first50_100k.filt.fasta -dna -oc . -mod zoops -nmotifs 10 -minw 20 -maxw 50 -maxsize 100000000000
 ```
 ## Ploidy determination using allele frequency
 We used a program called [ploidyNGS.py](https://github.com/diriano/ploidyNGS?tab=readme-ov-file) <br />
@@ -154,7 +153,7 @@ Whole genome, all the reads, using ploidy guess
 ```
 Per chromosome (using slurm)
 ```
-N=$(find /local/projects-t3/SerreDLab-3/fdumetz/Crithidia/hifi/ploidy/ploidyNGS_perChr -maxdepth 1 -name "*.bam" | wc -l)
+N=$(find ploidyNGS_perChr -maxdepth 1 -name "*.bam" | wc -l)
 
-sbatch --array=1-"$N" /home/fdumetz/ploidyNGS/ploidyNGS_perChr.sh
+sbatch --array=1-"$N" ploidyNGS_perChr.sh
 ```
